@@ -1,0 +1,121 @@
+services:
+  db-front:
+    image: postgres:16-alpine
+    container_name: db-front
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: socfront
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Pastword1234.
+    networks:
+      - socfront
+    mem_limit: 6g
+
+  php:
+    build: .
+    container_name: php
+    depends_on:
+      - db-front
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - .:/var/www/html  
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./infra/nginx/ssl:/etc/caddy/ssl
+    ports:
+      - 9000:9000
+      - 2019:2019
+      - 80:80/tcp
+      - 3330:3330
+      - 443:443/tcp                
+    networks:
+      - socfront
+
+
+  queue-worker:
+    build: .
+    volumes:
+      - .:/var/www/html
+    command: php artisan queue:work --tries=6
+    depends_on:
+      - php
+    container_name: queue-worker
+    restart: unless-stopped
+    tty: true
+    environment:
+      CONTAINER_ROLE: queue
+    networks:
+      - socfront
+    mem_limit: 2g
+
+  schedule-worker:
+    build: .
+    depends_on:
+      - php
+    restart: unless-stopped
+    tty: true
+    container_name: schedule-worker
+    volumes:
+      - .:/var/www/html
+    command: php artisan schedule:work
+    environment:
+      CONTAINER_ROLE: scheduler
+    networks:
+      - socfront
+    mem_limit: 2g
+
+  redis-front:
+    image: redis:alpine
+    container_name: redis-front
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - socfront
+    mem_limit: 3g
+
+  rdadmin:
+    image: erikdubbelboer/phpredisadmin:latest
+    container_name: rdadmin
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 6360:80
+    env_file:
+      - .env
+    networks:
+      - socfront
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    env_file:
+      - .env
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: unless-stopped
+    tty: true
+    networks:
+      - socfront
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  database:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  caddy_data:
+  caddy_config:
+
+networks:
+  socfront:
+    driver: bridge
+

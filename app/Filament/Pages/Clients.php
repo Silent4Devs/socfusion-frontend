@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Filament\Pages;
+
+use Filament\Pages\Page;
+use App\Models\Client;
+
+class Clients extends Page
+{
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static string $view = 'filament.pages.clients';
+
+    public $clients;
+    public $total;
+    public $name, $email, $phone, $address, $logo;
+        
+    public function mount(): void
+    {
+        $this->clients = Client::orderBy('name')->get();
+        $this->total = $this->clients->count();
+    }
+
+
+    protected $rules = [
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:clients,email',
+        'phone' => 'nullable|string|max:20',
+        'address' => 'nullable|string|max:255',
+        'logo' => 'nullable|image|max:2048',
+    ];
+
+    public function save()
+    {
+        $this->validate();
+
+        $logoPath = null;
+        if ($this->logo) {
+            $logoPath = $this->logo->store('logos', 'public');
+        }
+
+        Client::create([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
+            'logo' => $logoPath,
+        ]);
+
+        $this->reset();
+        
+    }
+    
+}
