@@ -26,6 +26,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/frankenphp/Caddyfile
       - ./infra/nginx/ssl:/etc/caddy/ssl
     ports:
       - 9000:9000
@@ -35,7 +36,6 @@ services:
       - 443:443/tcp                
     networks:
       - socfront
-
 
   queue-worker:
     build: .
@@ -78,8 +78,7 @@ services:
       - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
       - socfront
-    mem_limit: 3g
-
+    mem_limit: 3
   rdadmin:
     image: erikdubbelboer/phpredisadmin:latest
     container_name: rdadmin
