@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use Livewire\Attributes\On; 
 use Filament\Pages\Page;
 use App\Models\Client;
 
@@ -14,7 +15,8 @@ class Clients extends Page
     public $clients;
     public $total;
     public $name, $email, $phone, $address, $logo;
-        
+    public $search;
+
     public function mount(): void
     {
         $this->clients = Client::orderBy('name')->get();
@@ -52,5 +54,17 @@ class Clients extends Page
 
         
     }
+
+    #[On('delete-client')]
+    public function deleteClient($id)
+    {
+        $client = Client::find($id);
+        if ($client) {
+            $client->delete();
+        }
+        $this->clients = Client::orderBy('name')->get();
+        $this->dispatch('swal-deleted');
     
+    }
+
 }

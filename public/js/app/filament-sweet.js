@@ -82,7 +82,7 @@ window.showModalConfirm = function(message, confirmText = 'Sí', cancelText = 'N
   return Swal.fire({
     icon: 'question',
     title: '¿Estás seguro?',
-    text: message,
+    html: message,
     showCancelButton: true,
     confirmButtonText: confirmText,
     cancelButtonText: cancelText,
