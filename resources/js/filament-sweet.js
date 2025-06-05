@@ -79,7 +79,7 @@ window.showModalInfo = function(message) {
 };
 
 window.showModalConfirm = function(message, confirmText = 'Sí', cancelText = 'No') {
-  Swal.fire({
+  return Swal.fire({
     icon: 'question',
     title: '¿Estás seguro?',
     html: message,
