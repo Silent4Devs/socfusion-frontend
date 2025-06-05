@@ -16,6 +16,28 @@ class Clients extends Page
     public $total;
     public $name, $email, $phone, $address, $logo;
     public $search;
+    public $perPage;
+    public $currentPage = 1;
+    public $pages = [1,2,3]; 
+
+    public function gotoPage($page)
+    {
+        $this->currentPage = $page;
+    }
+
+    public function nextPage()
+    {
+        if ($this->currentPage < count($this->pages)) {
+            $this->currentPage++;
+        }
+    }
+
+    public function previousPage()
+    {
+        if ($this->currentPage > 1) {
+            $this->currentPage--;
+        }
+    }
 
     public function mount(): void
     {
@@ -51,6 +73,7 @@ class Clients extends Page
 
         $this->reset();
         $this->clients = Client::orderBy('name')->get();
+        $this->total = $this->clients->count();
 
         
     }
@@ -64,6 +87,8 @@ class Clients extends Page
         }
         $this->clients = Client::orderBy('name')->get();
         $this->dispatch('swal-deleted');
+        $this->total = $this->clients->count();
+
     
     }
 
