@@ -48,6 +48,8 @@ class Clients extends Page
         ]);
 
         $this->reset();
+        $this->clients = Client::orderBy('name')->get();
+
         
     }
     
