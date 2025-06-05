@@ -77,3 +77,18 @@ window.showModalInfo = function(message) {
     color: isDarkMode() ? '#fff' : '#23272F'
   });
 };
+
+window.showModalConfirm = function(message, confirmText = 'Sí', cancelText = 'No') {
+  return Swal.fire({
+    icon: 'question',
+    title: '¿Estás seguro?',
+    text: message,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    confirmButtonColor: '#6366f1',
+    cancelButtonColor: '#f472b6',
+    background: isDarkMode() ? '#23272F' : '#fff',
+    color: isDarkMode() ? '#fff' : '#23272F'
+  });
+};
