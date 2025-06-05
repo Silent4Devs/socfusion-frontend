@@ -42,6 +42,8 @@ RUN install-php-extensions \
     ftp \
     imagick 
 
+
+RUN sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' /etc/ImageMagick-6/policy.xml || true
 RUN chown -R www-data:www-data /var/www && chmod 755 -R /var/www
 
 RUN npm install -g npm@latest
