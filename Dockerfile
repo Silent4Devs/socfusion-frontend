@@ -39,7 +39,8 @@ RUN install-php-extensions \
     sodium \
     posix \
     amqp \
-    ftp
+    ftp \
+    imagick 
 
 RUN chown -R www-data:www-data /var/www && chmod 755 -R /var/www
 
