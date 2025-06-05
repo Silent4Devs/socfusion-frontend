@@ -78,17 +78,6 @@ window.showModalInfo = function(message) {
   });
 };
 
-window.showModalInfo2 = function(message) {
-  Swal.fire({
-    icon: 'info',
-    title: 'Información',
-    text: message,
-    confirmButtonColor: '#2563eb',
-    background: isDarkMode() ? '#23272F' : '#fff',
-    color: isDarkMode() ? '#fff' : '#23272F'
-  });
-};
-
 window.showModalConfirm = function(message, confirmText = 'Sí', cancelText = 'No') {
   Swal.fire({
     icon: 'question',
