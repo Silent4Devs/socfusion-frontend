@@ -24,6 +24,8 @@ class Dashboard extends Page
     public $high_count;
     public $prtg_percentage;
 
+    public $reports_percentage;
+
     public $last_reports;
     public $clients;
     public $total_clients;
@@ -49,10 +51,35 @@ class Dashboard extends Page
         $this->total_logrhythm = $data['total_logrhythm'] ?? 0;
         $this->total_prtg = $data['total_prtg'] ?? 0;
         $this->logrhythm_timeline = $data['logrhythm_timeline'] ?? [];
-        $this->prtg_percentage = $data['prtg_percentage'] ?? 0;
-        $this->logrhythm_percentaje = $data['logrhythm_percentaje'] ?? 0;
-        $this->high_percentage = $data['high_percentage'] ?? 0;
+
+        $this->prtg_percentage = isset($data['prtg_percentage']) ? round($data['prtg_percentage'], 1) : 0;
+        $this->logrhythm_percentaje = isset($data['logrhythm_percentaje']) ? round($data['logrhythm_percentaje'], 1) : 0;
+        $this->high_percentage = isset($data['high_percentage']) ? round($data['high_percentage'], 1) : 0;
         $this->high_count = $data['high_count'] ?? 0;
+
+        $now = Carbon::now();
+
+        $this->today_reports = Report::whereBetween('created_at', [
+            $now->copy()->startOfDay(),
+            $now,
+        ])->count();
+
+        $yesterdayStart = $now->copy()->subDay()->startOfDay();
+        $yesterdayNow = $now->copy()->subDay();
+
+        $this->reports_yesterday_count = Report::whereBetween('created_at', [
+            $yesterdayStart,
+            $yesterdayNow,
+        ])->count();
+
+        if ($this->reports_yesterday_count > 0) {
+            $this->reports_percentage = round(
+                (($this->today_reports - $this->reports_yesterday_count) / $this->reports_yesterday_count) * 100,
+                1
+            );
+        } else {
+            $this->reports_percentage = $this->today_reports > 0 ? 100.0 : 0.0;
+        }
         
         $this->clients = Client::withCount(['reports' => function ($query) {
             $query->where('created_at', '>=', Carbon::now()->subDays(30));
@@ -60,6 +87,7 @@ class Dashboard extends Page
         ->orderByDesc('reports_count')
         ->take(5)
         ->get();
+        
         $this->total_clients = Client::count();
         $response = Http::get($this->ia_server . '/alarms/logrhythm');
         $data = $response->json() ?? [];

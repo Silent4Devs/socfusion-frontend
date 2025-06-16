@@ -163,12 +163,20 @@
                             x-text="count"
                             class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">
                         </h3>
-                        <p class="text-green-500 text-sm mt-2 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                            </svg>
-                            5.3%
-                        </p>
+                            @php
+                                $reports_percentageClass = $reports_percentage > 0 ? 'text-green-500' : 'text-red-500';
+                                $highArrowPathReports = $reports_percentage > 0
+                                    ? 'M5 10l7-7m0 0l7 7m-7-7v18'  
+                                    : 'M19 14l-7 7m0 0l-7-7m7 7V3';
+                            @endphp
+
+                            <p class="{{ $reports_percentageClass }} text-sm mt-2 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $highArrowPathReports }}" />
+                                </svg>
+                                {{ $reports_percentage }}%
+                            </p>
+        
                         </div>
                         <div class="bg-green-100 p-3 rounded-full">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
