@@ -194,7 +194,7 @@
                                     <h1 style="margin: 0; font-size: 20px; color: #222222; white-space: nowrap;">
                                         {{ $client['name'] ?? ($client->name ?? 'Reporte de seguridad') ?? 'Reporte de seguridad' }}
                                     </h1>
-                                    <p style="margin: 0; color: #666666; font-size: 14px;">Generado el {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
+                                    <p style="margin: 0; color: #666666; font-size: 14px;">{{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
                                 </td>
                             </tr>
                         </table>
