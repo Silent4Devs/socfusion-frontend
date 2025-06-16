@@ -7,7 +7,6 @@ use App\Models\Document;
 use Livewire\Attributes\On; 
 use Illuminate\Support\Facades\Storage;
 
-
 class PdfModal extends Component
 {
 
@@ -21,7 +20,7 @@ class PdfModal extends Component
 
     public function mount() : void
     {
-        $this->show = False; 
+        $this->show = false; 
         $this->iaServer = config('services.ia_server');
     }
 
@@ -31,7 +30,7 @@ class PdfModal extends Component
         $document = Document::where('full_name', $file)->first();
 
         if (!$document) {
-            $this->dispatch('notify', ['message' => 'Documento no encontrado.']);
+            $this->dispatch('pdf-error');
             return;
         }
 
@@ -41,9 +40,16 @@ class PdfModal extends Component
 
         $storagePath = 'documents/' . $pdfName;
 
-        $this->url = Storage::url($storagePath); 
+        if (!Storage::exists($storagePath)) {
+
+            $this->dispatch('pdf-error');
+            return;
+        }
+
+        $this->url = Storage::url($storagePath);
         $this->show = true;
     }
+
 
 
     public function close(){

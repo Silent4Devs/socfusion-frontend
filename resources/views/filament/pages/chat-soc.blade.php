@@ -132,12 +132,10 @@
 
             eyeButton.addEventListener("click", () => {
                 Livewire.dispatch('show-pdf', { file: full_path });
-                console.log("Dispatchin event");
             });
 
             const url = `http://192.168.40.1:8000/documents/file/?file_name=${encodeURIComponent(full_path)}`;
 
-            
             const actionLink = document.createElement("a");
             actionLink.setAttribute("href", url);
             actionLink.setAttribute("target", "_blank");
@@ -457,7 +455,10 @@
                 notyf.error("Error de conexión");
             }
         };
-
+        
+        window.addEventListener('pdf-error', () => {
+            window.showToastError("Hubo un error al ver el documento.");    
+        });
     </script>
     
     @livewire('pdf-modal')
