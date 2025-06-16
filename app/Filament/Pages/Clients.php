@@ -131,7 +131,7 @@ class Clients extends Page
             'phone' => $this->phone,
             'address' => $this->address,
         ]);
-        $this->resetForm();
+        $this->reset();
     }
     
     protected $rules = [
