@@ -31,6 +31,11 @@ class Dashboard extends Page
     public $total_clients;
     public $ia_server;
 
+    public $alerts_per_page = 3;
+    public $current_alert_page = 1;
+    public $all_alerts = [];
+    public $visible_alerts = [];
+
     public function mount(): void
     {
         $this->ia_server = config('services.ia_server');
@@ -91,6 +96,30 @@ class Dashboard extends Page
         $this->total_clients = Client::count();
         $response = Http::get($this->ia_server . '/alarms/logrhythm');
         $data = $response->json() ?? [];
-        $this->last_alerts = array_slice($data, 0,3);
+        $this->all_alerts = array_slice($data, 0,21);
+        $this->updateVisibleAlerts();
+    }
+
+    public function updateVisibleAlerts()
+    {
+        $offset = ($this->current_alert_page - 1) * $this->alerts_per_page;
+        $this->visible_alerts = array_slice($this->all_alerts, $offset, $this->alerts_per_page);
+    }
+
+    public function previousAlerts()
+    {
+        if ($this->current_alert_page > 1) {
+            $this->current_alert_page--;
+            $this->updateVisibleAlerts();
+        }
+    }
+
+    public function nextAlerts()
+    {
+        $max_page = ceil(count($this->all_alerts) / $this->alerts_per_page);
+        if ($this->current_alert_page < $max_page) {
+            $this->current_alert_page++;
+            $this->updateVisibleAlerts();
+        }
     }
 }
