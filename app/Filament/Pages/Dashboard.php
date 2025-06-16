@@ -98,6 +98,7 @@ class Dashboard extends Page
         $data = $response->json() ?? [];
         $this->all_alerts = array_slice($data, 0,21);
         $this->updateVisibleAlerts();
+        $this->dispatch('update-chart');
     }
 
     public function updateVisibleAlerts()

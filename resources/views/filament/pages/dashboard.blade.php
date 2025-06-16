@@ -236,7 +236,7 @@
                         <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Alertas por Hora (últimas 24h)</h2>
                         <div class="flex items-center space-x-2">
                             <span class="text-sm text-gray-500 dark:text-gray-400">Proyección próximas 6h</span>
-                            <span class="h-2 w-2 rounded-full bg-purple-500"></span>
+                            <span class="h-2 w-2 rounded-full bg-red-500"></span>
                         </div>
                     </div>
                     
@@ -270,7 +270,6 @@
                             
                      @foreach ($visible_alerts as $alert)
                         @php
-                            // Determina el color según el nivel
                             switch(strtolower($alert['model_classification'] ?? '')) {
                                 case 'high':
                                     $bgColor = 'bg-red-50 dark:bg-red-900/20';
@@ -340,186 +339,121 @@
                 </div>
             </div>
         </div>  
-    </div>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient"></script>
 
+            <script>
+            let hourlyChart = null; 
+            function renderChart() {
+                const logrhythmTimeline = @json($logrhythm_timeline);
+                
+                if (window.hourlyChart) {
+                    window.hourlyChart.destroy();
+                }
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient"></script>
+                const ctx = document.getElementById('hourlyAlertsChart').getContext('2d');
+                const isDark = document.documentElement.classList.contains('dark');
+                
+            
+                const colors = {
+                    text: isDark ? '#e5e7eb' : '#4b5563',
+                    grid: isDark ? 'rgba(55, 65, 81, 0.3)' : 'rgba(209, 213, 219, 0.3)',
+                    border: isDark ? 'rgba(156, 163, 175, 0.3)' : 'rgba(156, 163, 175, 0.3)',
+                    real: isDark ? '#60a5fa' : '#3b82f6',
+                    pred: isDark ? '#f87171' : '#ef4444'
+                };
+
+                window.hourlyChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: logrhythmTimeline.map(item => 
+                            new Date(item.hora).toLocaleTimeString('es-MX', { 
+                                hour: '2-digit', 
+                                minute: '2-digit'
+                            })
+                        ),
+                        datasets: [{
+                            data: logrhythmTimeline.map(item => item.count),
+                            pointBackgroundColor: logrhythmTimeline.map(item => 
+                                item.prediction ? colors.pred : colors.real
+                            ),
+                            borderColor: colors.border,
+                            borderWidth: 1,
+                            tension: 0.2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                mode: 'nearest',
+                                backgroundColor: isDark ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                                titleColor: colors.text,
+                                bodyColor: colors.text,
+                                borderColor: colors.border,
+                                borderWidth: 1,
+                                padding: 8,
+                                callbacks: {
+                                    label: (ctx) => `${logrhythmTimeline[ctx.dataIndex].prediction ? 'Pred' : 'Real'}: ${ctx.parsed.y}`,
+                                    title: (ctx) => ctx[0].label
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { 
+                                grid: { display: false },
+                                ticks: { color: colors.text }
+                            },
+                            y: { 
+                                grid: { color: colors.grid },
+                                ticks: { color: colors.text },
+                                beginAtZero: true
+                            }
+                        },
+                        interaction: { mode: 'nearest' },
+                        elements: {
+                            point: {
+                                radius: 3,
+                                hoverRadius: 5
+                            }
+                        }
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                renderChart();
+            });
+
+          
+            document.addEventListener('update-chart', function() {
+                renderChart();
+            });
+            </script>
 
     <script>
-
-        
         const logrhythmTimeline = @json($logrhythm_timeline);
 
-        const labels = logrhythmTimeline.map(([timestamp, value]) => {
-            const date = new Date(timestamp);
+        const { labels, dataCounts, pointColors, bgPointColors } = logrhythmTimeline.reduce((acc, item) => {
+            acc.labels.push(new Date(item.hora).toLocaleTimeString('es-MX', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: false 
+            }));
+            acc.dataCounts.push(item.count);
+            acc.pointColors.push(item.prediction ? '#ef4444' : '#3b82f6');
+            acc.bgPointColors.push(item.prediction ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.1)');
+            return acc;
+        }, { labels: [], dataCounts: [], pointColors: [], bgPointColors: [] });
 
-            const hour = date.getHours().toString().padStart(2, '0');
-            const day = date.getDate();
-            const today = new Date().getDate();
 
-            const prefix = day === today ? '' : `${day} -`; 
-
-            return `${prefix} ${hour}:00`;
-        });
-
-        const alertData = logrhythmTimeline.map(([timestamp, value]) => value);
-        
-        const baseIndex = 21;
-        const baseValue = alertData.length > baseIndex ? alertData[baseIndex] : alertData[alertData.length - 1];
-
-        for (let i = 1; i <= 6; i++) {
-            const index = alertData.length - 20 + i;
-            const baseValue = index >= 0 ? alertData[index] : alertData[0];
-
-            const prediction = Math.max(baseValue + Math.floor(Math.random()*2)-1, 0);
-            alertData.push(prediction);
-
-            const label = `P+${i}`;
-            labels.push(label);
-        }
-
-        const ctx = document.getElementById('hourlyAlertsChart').getContext('2d');
-        
-     
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.2)');
-        
-        const areaGradient = ctx.createLinearGradient(0, 0, 0, 300);
-        areaGradient.addColorStop(0, 'rgba(59, 130, 246, 0.2)');
-        areaGradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
-
-        const projectionGradient = ctx.createLinearGradient(0, 0, 0, 300);
-        projectionGradient.addColorStop(0, 'rgba(250, 40, 40, 0.93)');
-        projectionGradient.addColorStop(1, 'rgba(247, 85, 85, 0.1)');
-        
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Alertas por hora',
-                    data: alertData,
-                    borderColor: gradient,
-                    backgroundColor: areaGradient,
-                    borderWidth: 3,
-                    tension: 0.3,
-                    pointRadius: 0,
-                    pointHoverRadius: 10,
-                    pointBackgroundColor: '#3B82F6',
-                    pointHoverBackgroundColor: '#2563EB',
-                    fill: true,
-                    segment: {
-                        borderColor: ctx => {
-                            return ctx.p1DataIndex >= 24 ? 'rgba(247, 85, 85, 0.8)' : undefined;
-                        },
-                        backgroundColor: ctx => {
-                            return ctx.p1DataIndex >= 24 ? projectionGradient : undefined;
-                        }
-                    }
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderWidth: 1,
-                        padding: 12,
-                        callbacks: {
-                            label: function(context) {
-                                return `${context.parsed.y} alertas a las ${context.label}`;
-                            },
-                            title: function(context) {
-                                return context[0].dataIndex >= 24 ? 
-                                    `PROYECCIÓN: ${context[0].label}` : 
-                                    `Alertas a las ${context[0].label}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#6B7280',
-                            maxRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: 12,
-                            callback: function(value) {
-                             
-                                if (value % 2 === 0) {
-                                    return this.getLabelForValue(value);
-                                }
-                                return '';
-                            }
-                        }
-                    },
-                    y: {
-                        grid: {
-                            color: 'rgba(209, 213, 219, 0.3)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#6B7280',
-                            precision: 0
-                        },
-                        beginAtZero: true
-                    }
-                },
-                animation: {
-                    duration: 1500,
-                    easing: 'easeOutQuart'
-                },
-                elements: {
-                    line: {
-                        cubicInterpolationMode: 'monotone'
-                    },
-                    point: {
-                        hoverBorderWidth: 2,
-                        hoverBorderColor: '#fff'
-                    }
-                }
-            }
-        });
-        
-        const applyDarkMode = (isDark) => {
-            const gridColor = isDark ? 'rgba(75, 85, 99, 0.3)' : 'rgba(209, 213, 219, 0.3)';
-            const tickColor = isDark ? '#D1D5DB' : '#6B7280';
-            
-            chart.options.scales.x.ticks.color = tickColor;
-            chart.options.scales.y.ticks.color = tickColor;
-            chart.options.scales.y.grid.color = gridColor;
-            
-            chart.update();
-        };
-        
-     
-        const darkModeObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName === 'class') {
-                    const isDark = document.documentElement.classList.contains('dark');
-                    applyDarkMode(isDark);
-                }
-            });
-        });
-        
-        darkModeObserver.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
     </script>
+
+    </div>
+
 
     
 </x-filament-panels::page>
