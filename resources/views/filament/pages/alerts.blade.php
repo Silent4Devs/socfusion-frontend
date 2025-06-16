@@ -35,6 +35,9 @@
 
         <div class="flex gap-4" 
         x-data="{ openReportModal: false,  
+            createTicket: false,
+            commentstTicket: '',
+            assignTicket: null,
             comments: '',
             evidence: null,
             alarmId: null,
@@ -791,12 +794,53 @@
                             </div>
                         </div>
                     </div>
+
+                    <label class="flex items-center space-x-3 cursor-pointer select-none mb-4">
+                        <input
+                            type="checkbox"
+                            x-model="createTicket"
+                            class="form-checkbox h-5 w-5 rounded text-primary-500 dark:text-primary-400 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 transition duration-150"
+                        >
+                        <span class="text-gray-700 dark:text-gray-200 font-medium">Crear ticket</span>
+                    </label>
+                <div x-show="createTicket" 
+                        x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-2"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 translate-y-2"
+                        class="p-4 mt-2">
+            
+                        <div class="mb-3">
+                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">Comentarios ticket</label>
+                            <textarea
+                                x-model="commentsTicket"
+                                class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"
+                                rows="3"
+                            ></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">Asignar a</label>
+                            <select
+                                x-model="assingTicket"
+                                class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"
+                            >
+                                <option value="">Selecciona usuario</option>
+                                <option value="usuario1">Usuario 1</option>
+                                <option value="usuario2">Usuario 2</option>
+                                <option value="usuario3">Usuario 3</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                    
                 </div>
             </div>
                         
             <div class="px-6 py-4 bg-gray-50/50 dark:bg-gray-700/50 flex justify-end space-x-3">
                 <button 
-                    @click="openReportModal = false; resetForm()" 
+                    @click="openReportModal = false; resetForm(); createTicket = false" 
                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors">
                     Cancelar
                 </button>
@@ -806,7 +850,6 @@
                     class="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                     Enviar Reporte
                 </button>
-
             </div>
         </div>
     </div>

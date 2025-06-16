@@ -34,9 +34,8 @@ class Reports extends Page
     public function deleteReport($id)
     {
         Report::find($id)->delete();
-        $this->reports = Report::orderBy('created_at', 'desc')->take(12)->get();
+        $this->getReportsProperty();        
         $this->dispatch('swal-deleted');
-
     }
 
     public function mount()
