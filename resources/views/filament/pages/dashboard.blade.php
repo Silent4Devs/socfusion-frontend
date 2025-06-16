@@ -397,7 +397,7 @@
                                 borderWidth: 1,
                                 padding: 8,
                                 callbacks: {
-                                    label: (ctx) => `${logrhythmTimeline[ctx.dataIndex].prediction ? 'Pred' : 'Real'}: ${ctx.parsed.y}`,
+                                    label: (ctx) => `${logrhythmTimeline[ctx.dataIndex].prediction ? 'Predicción' : 'Total'}: ${ctx.parsed.y}`,
                                     title: (ctx) => ctx[0].label
                                 }
                             }
