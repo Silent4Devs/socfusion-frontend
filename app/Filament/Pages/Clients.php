@@ -5,47 +5,135 @@ namespace App\Filament\Pages;
 use Livewire\Attributes\On; 
 use Filament\Pages\Page;
 use App\Models\Client;
+use Livewire\WithFileUploads;
 
 class Clients extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static string $view = 'filament.pages.clients';
+    protected ?string $heading = '';
 
     public $clients;
     public $total;
     public $name, $email, $phone, $address, $logo;
-    public $search;
-    public $perPage;
+    public $perPage = 10; 
     public $currentPage = 1;
-    public $pages = [1,2,3]; 
+    public $pages = [];
+    public $totalPages;
+    public $start, $end;
+    public $allClients;
+    public $search = '';
+    public $query;
 
-    public function gotoPage($page)
+    public function updatedSearch()
     {
-        $this->currentPage = $page;
+        $query = Client::orderBy('name');
+        
+        if ($this->search) {
+            $query->where('name', 'like', '%' . $this->search . '%');
+        }
+        $this->total = $query->count();
+
+        $this->currentPage = 1;
+
+        $this->setPagesArray();
+
+        $this->clients = $query
+            ->skip(($this->currentPage - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
+    }
+    
+    public function getTotalPages()
+    {
+        return (int) ceil($this->total / $this->perPage);
     }
 
-    public function nextPage()
+    public function setPagesArray()
     {
-        if ($this->currentPage < count($this->pages)) {
-            $this->currentPage++;
-        }
-    }
+        $this->totalPages = $this->getTotalPages();
+        $start = max(1, $this->currentPage - 2);
+        $end = min($this->totalPages, $this->currentPage + 2);
 
-    public function previousPage()
-    {
-        if ($this->currentPage > 1) {
-            $this->currentPage--;
-        }
+        $this->pages = range($start, $end);
     }
 
     public function mount(): void
     {
-        $this->clients = Client::orderBy('name')->get();
-        $this->total = $this->clients->count();
+        $this->allClients  = Client::orderBy('name')->get();
+        $this->total = $this->allClients->count();
+        $this->setPagesArray();
+        $this->updateClientsForCurrentPage();
+    }
+
+    public function updateClientsForCurrentPage()
+    {
+        $filteredClients = $this->allClients;
+
+        if ($this->search) {
+            $filteredClients = $filteredClients->filter(function ($client) {
+                return stripos($client->name, $this->search) !== false;
+            });
+        }
+
+        $this->total = $filteredClients->count();
+
+        $start = ($this->currentPage - 1) * $this->perPage;
+        $this->clients = $filteredClients->slice($start, $this->perPage);
+    }
+
+    public function gotoPage($page)
+    {
+        $this->currentPage = $page;
+        $this->setPagesArray();
+        $this->updateClientsForCurrentPage();
+    }
+
+    public function nextPage()
+    {
+        if ($this->currentPage < $this->getTotalPages()) {
+            $this->currentPage++;
+            $this->setPagesArray();
+            $this->updateClientsForCurrentPage();
+        }
+    }
+    public function previousPage()
+    {
+        if ($this->currentPage > 1) {
+            $this->currentPage--;
+            $this->setPagesArray();
+            $this->updateClientsForCurrentPage();
+        }
     }
 
 
+    public $clientId = null;
+
+    public function edit($id)
+    {
+        $client = Client::findOrFail($id);
+        $this->clientId = $client->id;
+        $this->name = $client->name;
+        $this->email = $client->email;
+        $this->phone = $client->phone;
+        $this->address = $client->address;
+        
+        $this->dispatch('open-client-modal');
+    }
+
+    public function update()
+    {
+        $client = Client::findOrFail($this->clientId);
+        $client->update([
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
+        ]);
+        $this->resetForm();
+    }
+    
     protected $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:clients,email',
@@ -74,7 +162,7 @@ class Clients extends Page
         $this->reset();
         $this->clients = Client::orderBy('name')->get();
         $this->total = $this->clients->count();
-
+        $this->dispatch('client-created');
         
     }
 
@@ -89,7 +177,14 @@ class Clients extends Page
         $this->dispatch('swal-deleted');
         $this->total = $this->clients->count();
 
-    
+    }
+
+    public function getCurrentClients()
+    {
+        return Client::orderBy('name')
+            ->skip(($this->currentPage - 1) * $this->perPage)
+            ->take($this->perPage)
+            ->get();
     }
 
 }

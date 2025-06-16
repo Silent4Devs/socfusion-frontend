@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ChatHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect('/admin', 301);
 });
+

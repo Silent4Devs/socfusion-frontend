@@ -1,5 +1,4 @@
 <x-filament-panels::page x-data="{ open: false }"
-     id="client-modal"
 >
     <div class="p-6 min-h-screen">
         
@@ -11,7 +10,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div lass="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <div class="relative flex-1">
-                    <input type="text" wire:model.live="search" placeholder="Search clients..." 
+                    <input type="text" wire:model.live.debounce="search" placeholder="Search clients..." 
                            class="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400">
                     <div class="absolute left-3 top-2.5 text-gray-400 dark:text-gray-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -76,8 +75,11 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex justify-end space-x-2">
-                                        <button onclick="openModal('edit')" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <button 
+                                                    wire:click="edit({{ $client->id }})" 
+                                                    class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                                                >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                             </svg>
                                         </button>
@@ -104,9 +106,14 @@
                     </a>
                 </div>
                 <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    @php
+                        $start = ($total === 0) ? 0 : (($currentPage - 1) * $perPage) + 1;
+                        $end = max(min($start + count($clients) - 1, $total),0);
+                    @endphp
+
                     <div>
-                        <p class="text-sm text-blue-600 dark:text-blue-400">
-                            Mostrando <span class="font-medium">1</span> a <span class="font-medium">2</span> de <span class="font-medium">{{ $total }}</span> resultados
+                        <p class="text-sm text-gray-700 dark:text-gray-400">
+                            Mostrando <span class="font-medium">{{ $start }}</span> a <span class="font-medium">{{ $end }}</span> de <span class="font-medium">{{ $total }}</span> resultados
                         </p>
                     </div>
                     <div>
@@ -162,16 +169,22 @@
     </div>
 
     <div id="client-modal"   
-    x-show="open"
-     @open-modal.window="open = true"
-     @close-modal.window="open = false"
+        x-show="open"
+         x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     @open-client-modal.window="open = true"
+     @close-client-modal.window="open = false"
       class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-black/50 dark:bg-gray-900/80 backdrop-blur-sm"></div>
             </div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white dark:bg-gradient-to-br dark:from-gray-800 dark:to-gray-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-200 dark:border-white/10">
+            <div class="inline-block align-bottom bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-200 dark:border-white/10">
             <form id="client-form" enctype="multipart/form-data">
                 <div class="p-6 space-y-6">
                     <h3 id="modal-title" class="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-400 dark:to-blue-600">
@@ -250,9 +263,15 @@
                     <button type="button" @click="open = false" class="px-6 py-2.5 border border-gray-300 dark:border-white/20 rounded-lg text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
                         Cancelar
                     </button>
-                    <button type="button" wire:click="save" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-600 rounded-lg text-white hover:from-blue-400 hover:to-blue-600 transition-all shadow-lg shadow-blue-600/20">
-                        Guardar Cliente
+                    <button 
+                        type="button" 
+                        wire:click="{{ $clientId ? 'update' : 'save' }}" 
+                        x-on:click="open = false"
+                    class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-600 rounded-lg text-white hover:from-blue-400 hover:to-blue-600 transition-all shadow-lg shadow-blue-600/20">
+
+                        {{ $clientId ? 'Actualizar Cliente' : 'Guardar Cliente' }}
                     </button>
+                    
                 </div>
             </form>
             </div>
@@ -276,6 +295,11 @@
 
         window.addEventListener('swal-deleted', () => {
             window.showToastSuccess("El cliente ha sido eliminado correctamente.");
+            
+        });
+
+        window.addEventListener('client-created', () => {
+            window.showToastSuccess("Cliente creado con éxito");
             
         });
     </script>

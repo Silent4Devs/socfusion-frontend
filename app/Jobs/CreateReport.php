@@ -10,9 +10,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
-
+use mikehaertl\wkhtmlto\Pdf;
+use Illuminate\Support\Facades\View;
+use App\Models\Client;
 
 class CreateReport implements ShouldQueue
 {
@@ -24,9 +25,10 @@ class CreateReport implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(int $reportId)
+    public function __construct($reportId)
     {
         $this->reportId = $reportId;
+   
     }
 
     /**
@@ -60,6 +62,11 @@ class CreateReport implements ShouldQueue
 
             if ($response->successful()) {
                 $alarmData = $response->json();
+                $client = $this->findClient($alarmData); // Se asocia con el cliente
+                if ($client) {
+                    $report->client()->associate($client);
+                    $report->save();
+                }
                 Log::info("Datos obtenidos de {$alarmType}: " . json_encode($alarmData));
                 $name = $alarmData['name'] ?? 'Sin nombre';
                 $severity = $alarmData['severity'] ?? 'desconocida';
@@ -90,22 +97,38 @@ class CreateReport implements ShouldQueue
                 $data = file_get_contents($path);
                 $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 
-                $pdf = Pdf::loadView('templates.report', [
+                $html = View::make('templates.report', [
                     'alarm' => $alarmData,
                     'suggestion' => $suggestion,
                     'alarmType' => $alarmType,
                     'logo' => $base64,
-                ])->setPaper('a4', 'portrait')->setOptions([
-                    'isHtml5ParserEnabled' => true,
-                    'isRemoteEnabled' => true,
-                    'chroot' => public_path()
+                    'client' => $client,
+                    'comments' => $report->comments,
+                    'evidence' => $report->evidence,
+                ])->render();
+
+                $pdf = new Pdf([
+                    'page-size' => 'A4',
+                    'orientation' => 'Portrait',
+                    'encoding' => 'UTF-8',
+                    'enable-local-file-access', 
                 ]);
-                
+       
+                $pdf->addPage($html);
+
                 $filename = 'report_' . time() . '.pdf';
                 $path = 'reports/' . $filename;
 
-                Storage::put($path, $pdf->output());
+                $content = $pdf->toString();
 
+                if (!$content) {
+                    Log::error('Error al generar PDF: ' . $pdf->getError());
+                    $report->status = 'Error';
+                    $report->save();
+                    return;
+                }
+
+                Storage::put($path, $content);
                 $report->filepath = $path;
                 $report->status = 'Completed';
                 $report->save();
@@ -124,4 +147,27 @@ class CreateReport implements ShouldQueue
         }
     }
 
+
+    public function findClient(array $alarmData): ?Client
+    {
+        // Combina todos los valores del array de alarma
+        $searchText = collect($alarmData)->implode(' ');
+
+        // Normaliza el texto completo de la alarma
+        $normalizedSearch = $this->normalizeText($searchText);
+
+        // Busca el primer cliente cuyo nombre normalizado esté en el texto normalizado
+        return Client::get()->first(function ($client) use ($normalizedSearch) {
+            $normalizedName = $this->normalizeText($client->name);
+            return str_contains($normalizedSearch, $normalizedName);
+        });
+    }
+
+    /**
+     * Normaliza un string: minúsculas y sin espacios ni saltos de línea.
+     */
+    private function normalizeText(string $text): string
+    {
+        return strtolower(preg_replace('/\s+/', '', $text));
+    }
 }

@@ -1,20 +1,43 @@
 <x-filament-panels::page>
-    <div class="flex flex-col space-y-6 dark:bg-gray-900 min-h-screen p-6">
+    <div class="flex flex-col space-y-6 dark:bg-gray-900 min-h-screen p-6" wire:poll.20s="fetchData">
         <div class="w-full p-8 bg-gray-50 dark:bg-gray-900 ">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                
-
                 <div class="bg-white rounded-xl shadow-md overflow-hidden dark:bg-gray-800 dark:text-white p-6 transition-all duration-300 hover:shadow-lg">
                     <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500 text-sm font-medium dark:text-gray-200">Logrhythm SIEM</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">{{ $total_logrhythm }}</h3>
-                        <p class="text-green-500 text-sm mt-2 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
-                        12.5%
+                        <h3 
+                            x-data="{ count: 0 }" 
+                            x-init="
+                                let target = {{ $total_logrhythm }};
+                                let step = Math.ceil(target / 20);
+                                let interval = setInterval(() => {
+                                    if (count + step >= target) {
+                                        count = target;
+                                        clearInterval(interval);
+                                    } else {
+                                        count += step;
+                                    }
+                                }, 40)
+                            "
+                            x-text="count"
+                            class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">
+                        </h3>
+                        @php
+                            $logrhythmColorClass = $logrhythm_percentaje > 0 ? 'text-green-500' : 'text-red-500';
+                            $arrowPath = $logrhythm_percentaje > 0
+                                ? 'M5 10l7-7m0 0l7 7m-7-7v18' // Flecha hacia arriba
+                                : 'M19 14l-7 7m0 0l-7-7m7 7V3'; // Flecha hacia abajo
+                        @endphp
+
+                        <p class="{{ $logrhythmColorClass }} text-sm mt-2 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $arrowPath }}" />
+                            </svg>
+                            {{ $logrhythm_percentaje }} %
                         </p>
+
                     </div>
 
                 
@@ -32,13 +55,37 @@
                     <div class="flex items-center justify-between ">
                         <div>
                             <p class="text-gray-500 text-sm font-medium dark:text-gray-200">PRTG</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">{{ $total_prtg }}</h3>
-                            <p class="text-green-500 text-sm mt-2 flex items-center">
+                            <h3 
+                                x-data="{ count: 0 }" 
+                                x-init="
+                                    let target = {{ $total_prtg }};
+                                    let step = Math.ceil(target / 20);
+                                    let interval = setInterval(() => {
+                                        if (count + step >= target) {
+                                            count = target;
+                                            clearInterval(interval);
+                                        } else {
+                                            count += step;
+                                        }
+                                    }, 40)
+                                "
+                                x-text="count"
+                                class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">
+                            </h3>
+                            @php
+                                $prtgColorClass = $prtg_percentage > 0 ? 'text-green-500' : 'text-red-500';
+                                $prtgArrowPath = $prtg_percentage > 0
+                                    ? 'M5 10l7-7m0 0l7 7m-7-7v18' 
+                                    : 'M19 14l-7 7m0 0l-7-7m7 7V3'; 
+                            @endphp
+
+                            <p class="{{ $prtgColorClass }} text-sm mt-2 flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $prtgArrowPath }}" />
                                 </svg>
-                                8.2% 
+                                {{ $prtg_percentage }}%
                             </p>
+
                         </div>
                  <div class="relative bg-purple-100 p-3 rounded-full">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,12 +99,35 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-sm font-medium dark:text-gray-200">Alertas Críticas</p>
-                            <h3 class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">36</h3>
-                            <p class="text-red-500 text-sm mt-2 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                            </svg>
-                            1.1% 
+                            <h3 
+                                x-data="{ count: 0 }" 
+                                x-init="
+                                    let target = {{ $high_count }};
+                                    let step = Math.ceil(target / 20);
+                                    let interval = setInterval(() => {
+                                        if (count + step >= target) {
+                                            count = target;
+                                            clearInterval(interval);
+                                        } else {
+                                            count += step;
+                                        }
+                                    }, 40)
+                                "
+                                x-text="count"
+                                class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">
+                            </h3>
+                            @php
+                                $percentageClassHigh = $high_percentage > 0 ? 'text-green-500' : 'text-red-500';
+                                $highArrowPath = $high_percentage > 0
+                                    ? 'M5 10l7-7m0 0l7 7m-7-7v18'  
+                                    : 'M19 14l-7 7m0 0l-7-7m7 7V3';
+                            @endphp
+
+                            <p class="{{ $percentageClassHigh }} text-sm mt-2 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $highArrowPath }}" />
+                                </svg>
+                                {{ $high_percentage }}%
                             </p>
                         </div>
 
@@ -76,7 +146,23 @@
                         <p class="text-gray-500 text-sm font-medium dark:text-gray-200">
                             Reportes Nuevos
                         </p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">{{ $today_reports }}</h3>
+                        <h3 
+                            x-data="{ count: 0 }" 
+                            x-init="
+                                let target = {{ $today_reports }};
+                                let step = Math.ceil(target / 20);
+                                let interval = setInterval(() => {
+                                    if (count + step >= target) {
+                                        count = target;
+                                        clearInterval(interval);
+                                    } else {
+                                        count += step;
+                                    }
+                                }, 40)
+                            "
+                            x-text="count"
+                            class="text-2xl font-bold text-gray-800 mt-1 dark:text-white">
+                        </h3>
                         <p class="text-green-500 text-sm mt-2 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
@@ -125,7 +211,7 @@
                     </div>
                     <div class="flex items-center">
                         <span class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                            {{ $client->alerts_count ?? '0' }} alertas
+                            {{ $client->reports_count ?? '0' }} alertas
                         </span>
                     </div>
                 </div>

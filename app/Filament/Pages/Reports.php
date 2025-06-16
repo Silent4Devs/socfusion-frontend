@@ -5,15 +5,25 @@ namespace App\Filament\Pages;
 use Livewire\Attributes\On; 
 use Filament\Pages\Page;
 use App\Models\Report;
+use Livewire\WithPagination;
 
 class Reports extends Page
 {
+
+    use WithPagination;
+    
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected ?string $heading = '';
 
     protected static string $view = 'filament.pages.reports';
 
     public $iaServer;
-    public $reports;
+    public $query;
+    
+    public function updatingQuery()
+    {
+        $this->resetPage();
+    }
 
     public function confirmDeletion($id)
     {
@@ -24,7 +34,7 @@ class Reports extends Page
     public function deleteReport($id)
     {
         Report::find($id)->delete();
-        $this->reports = Report::orderBy('created_at', 'desc')->take(10)->get();
+        $this->reports = Report::orderBy('created_at', 'desc')->take(12)->get();
         $this->dispatch('swal-deleted');
 
     }
@@ -32,6 +42,22 @@ class Reports extends Page
     public function mount()
     {
         $this->iaServer = config('services.ia_server');
-        $this->reports = Report::orderBy('created_at', 'desc')->get();    
+        $this->getReportsProperty();
     }
+
+    public function getReportsProperty()
+    {
+        $query = Report::orderBy('created_at', 'desc');
+
+        if ($this->query) {
+            $q = $this->query;
+            $query->where(function($sub) use ($q) {
+                $sub->where('title', 'like', "%{$q}%")
+                    ->orWhere('description', 'like', "%{$q}%");
+            });
+        }
+
+        return $query->paginate(9)->onEachSide(1);; 
+    }
+
 }

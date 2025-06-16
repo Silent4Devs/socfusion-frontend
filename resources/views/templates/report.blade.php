@@ -9,8 +9,8 @@
 
     <style>
         @page {
-            size: 8.5in 11in;
-            margin: .1in;
+            size: A4;
+            margin: 0.1in;
         }
 
         body {
@@ -21,6 +21,12 @@
             padding: 0px;
             margin: 0;
             font-size: 14px;
+            width: 210mm;
+            height: auto; 
+            min-height: 297mm;
+            box-sizing: border-box;
+            display: flex; 
+            flex-direction: column;
         }
 
         table, td, tr, div, .section-title, h3, h1, h2, p {
@@ -73,16 +79,6 @@
             padding: 10px;
             position: relative;
             letter-spacing: -0.025em;
-        }
-
-        .report-title::after {
-            content: ' ';
-            display: block;
-            width: 80px;
-            height: 3px;
-            background: linear-gradient(90deg, #38a6cc, #92c13b);
-            margin: 0.75rem auto 0;
-            border-radius: 3px;
         }
         
         .section {
@@ -152,7 +148,7 @@
             border-top: 1px solid #cccccc;
             margin-top: 25px;
         }
-        
+
         .footer {
             text-align: center;
             padding: 15px;
@@ -160,6 +156,8 @@
             color: #999999;
             border-top: 1px solid #f0f0f0;
             margin-top: auto;
+            margin-bottom: 10px;
+            width: 100%;
         }
         
         .section-full{
@@ -177,11 +175,25 @@
                     <td style="padding: 0; margin: 0; vertical-align: middle;">
                         <table style="margin: 0; padding: 0;">
                             <tr>
-                                <td style="padding: 0 10px;">
-                                    <img src="{{ public_path('images/cliente.png') }}" alt="Cliente" width="70" height="70" style="border-radius: 50%; border: 2px solid #e0e0e0;">
-                                </td>
+                            @isset($client)
+                            <td style="padding: 0 10px;">
+                                <div style="
+                                    width: 70px;
+                                    height: 70px;
+                                    border-radius: 50%;
+                                    border: 1px solid #e0e0e0;
+                                    background-image: url('{{ public_path('storage/' . $client['logo']) }}');
+                                    background-size: cover;
+                                    background-position: center;
+                                    background-repeat: no-repeat;
+                                    display: block;
+                                "></div>
+                            </td>
+                            @endisset
                                 <td style="padding: 0;">
-                                    <h1 style="margin: 0; font-size: 22px; color: #222222;">Nombre del Cliente</h1>
+                                    <h1 style="margin: 0; font-size: 20px; color: #222222; white-space: nowrap;">
+                                        {{ $client['name'] ?? ($client->name ?? 'Reporte de seguridad') ?? 'Reporte de seguridad' }}
+                                    </h1>
                                     <p style="margin: 0; color: #666666; font-size: 14px;">Generado el {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
                                 </td>
                             </tr>
@@ -195,152 +207,177 @@
             </table>
 
         </div>
+        @isset($client)
+            <h2 class="report-title">Reporte de Incidente de Seguridad</h2>
+            <div style="width: 80px; height: 3px; margin: 12px auto 0; border-radius: 3px; overflow: hidden; font-size: 0;">
+                <div style="display: inline-block; width: 50%; height: 100%; background-color: #38a6cc;"></div>
+                <div style="display: inline-block; width: 50%; height: 100%; background-color: #92c13b;"></div>
+            </div>
+        @endisset
         
-        <h2 class="report-title">Reporte de Incidente de Seguridad</h2>
-        
-        <table style="width: 100%; height: 570px; vertical-align: top; border-spacing:0;">
-            <tr style="width: 100%;">
+        <div class="min-height: 200mm;;">
+            <div style="width: 48%; box-sizing: border-box; display: inline-block; vertical-align: top; padding: 10px;">
+                <div style="font-weight: bold; font-size: 16px; margin-top: 10px; border-bottom: 1px solid #ccc; margin-botom: 10px;">
+                    Información Básica
+                </div>
 
-                <td class="section" style="margin-top: 0;">
-                    <div class="section-title">Información Básica</div>
-                    <div class="detail-item">
-                        <span class="detail-label">Herramienta de Detección</span>
-                            <div class="detail-value">
-                                @if ($alarmType === 'logrhythm')
-                                    LogRhythm SIEM
-                                @else
-                                    PRTG
-                                @endif
-                            </div>
+                <div style="margin-bottom: 10px; margin-top: 10px; ">
+                    <span style="display: block; font-weight: bold; font-size: 13px;">Herramienta de Detección</span>
+                    <div style="margin-left: 5px; font-size: 13px;">
+                        @if ($alarmType === 'logrhythm')
+                            LogRhythm SIEM
+                        @else
+                            PRTG
+                        @endif
                     </div>
+                </div>
+
                 @isset($alarm['alarm_rule_name'])
                     @if (!empty($alarm['alarm_rule_name']))
-                        <div class="detail-item">
-                            <span class="detail-label">Alarma</span>
-                            <div class="detail-value">{{ $alarm['alarm_rule_name'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Alarma</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['alarm_rule_name'] }}</div>
                         </div>
                     @endif
                 @endisset
 
                 @isset($alarm['date_inserted'])
                     @if (!empty($alarm['date_inserted']))
-                        <div class="detail-item">
-                            <span class="detail-label">Fecha </span>
-                            <div class="detail-value">{{ $alarm['date_inserted'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Fecha</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['date_inserted'] }}</div>
                         </div>
                     @endif
                 @endisset
 
                 @isset($alarm['log_source_type_name'])
                     @if (!empty($alarm['log_source_type_name']))
-                        <div class="detail-item">
-                            <span class="detail-label">Tipo de origen de log</span>
-                            <div class="detail-value">{{ $alarm['log_source_type_name'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Tipo de origen de log</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['log_source_type_name'] }}</div>
                         </div>
                     @endif
                 @endisset
-
 
                 @isset($alarm['event_count'])
                     @if (!empty($alarm['event_count']))
-                        <div class="detail-item">
-                            <span class="detail-label">Conteo de eventos</span>
-                            <div class="detail-value">{{ $alarm['event_count'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Conteo de eventos</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['event_count'] }}</div>
                         </div>
                     @endif
                 @endisset
 
-
                 @isset($alarm['name_raw'])
                     @if (!empty($alarm['name_raw']))
-                        <div class="detail-item">
-                            <span class="detail-label">Nombre</span>
-                            <div class="detail-value">{{ $alarm['name_raw'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Nombre</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['name_raw'] }}</div>
                         </div>
                     @endif
                 @endisset
 
                 @isset($alarm['status'])
                     @if (!empty($alarm['status']))
-                        <div class="detail-item">
-                            <span class="detail-label">Estado</span>
-                            <div class="detail-value">{{ $alarm['status'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Estado</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['status'] }}</div>
                         </div>
                     @endif
                 @endisset
-                
+
                 @isset($alarm['message_raw'])
                     @if (!empty($alarm['message_raw']))
-                        <div class="detail-item">
-                            <span class="detail-label">Mensaje crudo</span>
-                            <div class="detail-value">{{ $alarm['message_raw'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Mensaje crudo</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['message_raw'] }}</div>
                         </div>
                     @endif
                 @endisset
 
                 @isset($alarm['datetime'])
                     @if (!empty($alarm['datetime']))
-                        <div class="detail-item">
-                            <span class="detail-label">Fecha y hora</span>
-                            <div class="detail-value">{{ $alarm['datetime'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Fecha y hora</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['datetime'] }}</div>
                         </div>
                     @endif
                 @endisset
-                </td>
-            
-                <td class="section" style="margin-top: 0;">
-                    <div class="section-title">Detalles Técnicos</div>
-             
-                    @isset($alarm['impacted_entity_name'])
-                        @if (!empty($alarm['impacted_entity_name']))
-                            <div class="detail-item">
-                                <span class="detail-label">Entidad impactada</span>
-                                <div class="detail-value">{{ $alarm['impacted_entity_name'] }}</div>
-                            </div>
-                        @endif
-                    @endisset
-                    @isset($alarm['impacted_ip'])
-                        @if (!empty($alarm['impacted_ip']))
-                            <div class="detail-item">
-                                <span class="detail-label">IP impactada</span>
-                                <div class="detail-value">{{ $alarm['impacted_ip'] }}</div>
-                            </div>
-                        @endif
-                    @endisset
+            </div>
 
+            <div style="width: 48%; box-sizing: border-box; display: inline-block; vertical-align: top; padding: 10px;">
+                 <div style="font-weight: bold; font-size: 16px; margin-top: 10px; border-bottom: 1px solid #ccc; margin-botom: 10px;">
+                    Detalles técnicos
+                </div>
+
+                @isset($alarm['impacted_entity_name'])
+                    @if (!empty($alarm['impacted_entity_name']))
+                        <div style="margin-bottom: 10px; margin-top: 10px; ">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Entidad impactada</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_entity_name'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
+                @isset($alarm['impacted_ip'])
+                    @if (!empty($alarm['impacted_ip']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">IP impactada</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_ip'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
+                @isset($alarm['impacted_host'])
+                    @if (!empty($alarm['impacted_host']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Host impactado</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_host'] }}</div>
+                        </div>
+                    @endif
+                @endisset
 
                 @isset($alarm['priority'])
                     @if (!empty($alarm['priority']))
-                        <div class="detail-item">
-                            <span class="detail-label">Prioridad</span>
-                            <div class="detail-value">{{ $alarm['priority'] }}</div>
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Prioridad</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['priority'] }}</div>
                         </div>
                     @endif
                 @endisset
 
                 @isset($alarm['active'])
-                    {{-- This checks if it's not null, will print Sí/No --}}
-                    <div class="detail-item">
-                        <span class="detail-label">Activo</span>
-                        <div class="detail-value">{{ $alarm['active'] ? 'Sí' : 'No' }}</div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="display: block; font-weight: bold; font-size: 13px;">Activo</span>
+                        <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['active'] ? 'Sí' : 'No' }}</div>
                     </div>
                 @endisset
 
+                @isset($alarm['sensor'])
+                    @if (!empty($alarm['sensor']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Sensor</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['sensor'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+            </div>
 
-                    @isset($alarm['sensor'])
-                        @if (!empty($alarm['sensor']))
-                            <div class="detail-item">
-                                <span class="detail-label">Sensor</span>
-                                <div class="detail-value">{{ $alarm['sensor'] }}</div>
-                            </div>
-                        @endif
-                    @endisset
-
-                </td>
-            </tr>
-            
-        </table>
-        <div class="section-full">
+            @if (!empty($evidence))
+                <div style="margin-top: 30px; text-align: center; vertical-align: top;">
+                    <div style="
+                        display: inline-block;
+                        width: 100%;
+                        max-width: 600px;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                    ">
+                        <h3 style="font-size: 18px; margin-bottom: 15px; color: #444;"></h3>
+                        <img src="{{ public_path($evidence) }}" alt="Evidencia" style="max-width: 100%; height: auto; border-radius: 6px;">
+                    </div>
+                </div>
+            @endif
+        </div>
+        <div class="section-full" style="margin-top: 30px;">
                 <div class="section-title">Acciones y Recomendaciones</div>
                 @if(isset($suggestion) && !empty($suggestion))
                 <div class="detail-item">
@@ -350,6 +387,15 @@
                     </div>
                 </div>
                 @endif
+                
+                @if(isset($comments) && !empty($comments))
+                    <div class="detail-item">
+                        <span class="detail-label">Comentarios Adicionales</span>
+                        <div class="detail-value">
+                            {{ $comments }}
+                        </div>
+                    </div>
+                @endif
 
                 <!-- 
                 Add Ticket Tracking Information
@@ -358,6 +404,7 @@
                     <div class="detail-value" style="color:rgb(55, 107, 25);">TICKET-12345 (En progreso)</div>
                 </div> -->
         </div>
+
         <div class="footer">
             <p>© 2025 Silent4Business • Todos los derechos reservados</p>
         </div>

@@ -4,9 +4,9 @@
             Reportes de Alertas
         </x-slot>
         
-        <x-filament::grid default="1" sm="2" md="3" class="gap-4">
+        <x-filament::grid default="1" sm="2" md="3" class="gap-4" wire:poll.10s="$refresh">
             
-            @foreach($reports as $report)
+            @foreach($this->reports as $report)
             <x-filament::card>
                 <div class="space-y-4">
                     <div class="flex justify-between items-start">
@@ -32,11 +32,28 @@
                                         
                     <div class="rounded-md overflow-hidden">
                         @if($report['status'] === 'Completed')
-                            <img 
-                              src="{{ url('/api/reports/' . $report['id'] . '/preview-image') }}"
-                                alt="Loading preview..."
-                                class="w-auto h-auto object-cover mx-auto rounded"
+                        <div 
+                            x-data="{ loaded: false }"
+                            class="relative bg-gray-100 dark:bg-gray-800 rounded shadow flex justify-center items-center"
+                        >
+                            <div x-show="!loaded" class="absolute z-10 flex items-center justify-center w-full" style="height: 300px;">
+                                <svg class="animate-spin h-12 w-12 text-gray-300 dark:text-gray-600" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                            </div>
+                          
+                            <img
+                                src="{{ url('/api/reports/' . $report['id'] . '/preview-image') }}"
+                                alt="Preview"
+                                class="block w-full h-auto object-contain rounded transition-opacity duration-300"
+                                loading="lazy"
+                                @load="loaded = true"
+                                :class="{ 'opacity-0': !loaded, 'opacity-100': loaded }"
+                               
                             />
+                        </div>
+
 
                         @elseif($report['status'] === 'Error')
                         <div class="flex flex-col items-center justify-center space-y-4 py-6 animate-fade-in">
@@ -51,9 +68,7 @@
                                 </p>
                             </div>
                             
-                            <button class="mt-2 px-4 py-2 text-sm font-medium rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 transition-colors">
-                                Reintentar
-                            </button>
+            
                         </div>
 
                         <style>
@@ -147,6 +162,64 @@
             </x-filament::card>
             @endforeach 
         </x-filament::grid>
+            <div class="mt-6 flex justify-center items-center  select-none">
+
+                {{-- Previous button --}}
+                <button
+                    wire:click="previousPage"
+                    @if($this->reports->onFirstPage()) disabled @endif
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-white/20 text-sm font-medium text-black dark:text-white bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 focus:outline-none"
+                    aria-label="Anterior"
+                >
+                    <span class="sr-only">Anterior</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L9.414 10l3.293 3.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                {{-- One page before --}}
+                @if($this->reports->currentPage() > 1)
+                    <button
+                        wire:click="setPage({{ $this->reports->currentPage() - 1 }})"
+                        class="bg-gray-100 dark:bg-white/5 border-gray-300 dark:border-white/20 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 relative inline-flex items-center px-4 py-2 border text-sm font-medium focus:outline-none"
+                    >
+                        {{ $this->reports->currentPage() - 1 }}
+                    </button>
+                @endif
+
+                {{-- Current page --}}
+                <span 
+                class="z-10 bg-blue-600 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                    {{ $this->reports->currentPage() }}
+                </span>
+
+                {{-- One page after --}}
+                @if($this->reports->currentPage() < $this->reports->lastPage())
+                    <button
+                        wire:click="setPage({{ $this->reports->currentPage() + 1 }})"
+                        class="bg-gray-100 dark:bg-white/5 border-gray-300 dark:border-white/20 text-black dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 relative inline-flex items-center px-4 py-2 border text-sm font-medium focus:outline-none"
+                    >
+                        {{ $this->reports->currentPage() + 1 }}
+                    </button>
+                @endif
+
+                {{-- Next button --}}
+                <button
+                    wire:click="nextPage"
+                    @if(!$this->reports->hasMorePages()) disabled @endif
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-white/20 text-sm font-medium text-black dark:text-white bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 focus:outline-none"
+                    aria-label="Siguiente"
+                >
+                    <span class="sr-only">Siguiente</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+            </div>
+
+
+
         <style>
             .future-btn {
                 position: relative;

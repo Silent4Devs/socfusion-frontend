@@ -19,7 +19,14 @@ class Report extends Model
         'alarm_type',
         'client',
         'status',
-        'classification'
+        'classification',
+        'comments',
+        'evidence',
     ];
 
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
 }

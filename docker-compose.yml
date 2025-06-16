@@ -14,6 +14,19 @@ services:
       - socfront
     mem_limit: 6g
 
+  gotenberg:
+    image: gotenberg/gotenberg:7
+    container_name: gotenberg
+    command: gotenberg --log-level=info --api-timeout 400s
+    restart: unless-stopped
+    tty: true
+    environment:
+      - GOTENBERG_LIBREOFFICE_TIMEOUT=120s
+    ports: 
+      - "3000:3000"
+    networks:
+      - socfront
+
   php:
     build: .
     container_name: php

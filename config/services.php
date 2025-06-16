@@ -32,4 +32,6 @@ return [
     ],
 
     'ia_server' => env('IA_SERVER', 'http://localhost:8000'),
+
+    'gotenberg' => env('GOTENBERG_URL', 'http://gotenberg:3000')
 ];

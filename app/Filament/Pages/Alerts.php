@@ -8,13 +8,20 @@ use Livewire\Attributes\On;
 use App\Models\Report;
 use App\Jobs\CreateReport;
 use Illuminate\Support\Facades\Redis;
+use Livewire\WithFileUploads;
 
 class Alerts extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
+    protected ?string $heading = '';
 
     protected static string $view = 'filament.pages.alerts';
 
+    use WithFileUploads;
+
+    public $alarmId;
+    public $comments;
+    public $evidence; 
     public $alarms = [];
     public $search = "";
     public $filteredAlarms = [];
@@ -60,9 +67,13 @@ class Alerts extends Page
         });
     }
 
-    public function generateReport($alarmId, $alarmType, $title)
+    public function generateReport($alarmId, $alarmType, $title, $comments)
     {
-        
+        $evidencePath = null;
+        if ($this->evidence) {
+            $evidencePath = $this->evidence->store('reports_images', 'public');
+        }
+
         $report = Report::create([
             'title' => $title,
             'description' => null,
@@ -71,12 +82,16 @@ class Alerts extends Page
             'alarm_type' => $alarmType,
             'client' => null,
             'status' => 'In process',
+            'comments' => $comments,
+            'evidence' => $evidencePath ? 'storage/' . $evidencePath : null,
         ]);
 
-        CreateReport::dispatch($report->id);
-        $this->dispatch('new-report',
-            message : 'Reporte creado'
+        CreateReport::dispatch(
+            reportId: $report->id,
         );
+
+        $this->dispatch('new-report', message: 'El reporte se está generando');
+
         return response()->json(['message' => 'Your file is being processed.'], 200);
     }
 

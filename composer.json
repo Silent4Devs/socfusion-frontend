@@ -16,6 +16,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.6",
+        "mikehaertl/phpwkhtmltopdf": "^2.5",
         "predis/predis": "^3.0",
         "tomatophp/filament-simple-theme": "^1.0",
         "tomatophp/filament-users": "^2.0"

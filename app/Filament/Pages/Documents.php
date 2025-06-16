@@ -10,6 +10,7 @@ class Documents extends Page
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static string $view = 'filament.pages.documents';
+    protected ?string $heading = '';
 
     public $documents;
     public $clients;

@@ -16,4 +16,9 @@ class Client extends Model
     ];
 
     protected $table = 'clients';
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class);
+    }
 }

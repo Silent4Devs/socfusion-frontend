@@ -34,7 +34,7 @@ class ClienteController extends Controller
 
       
         if ($request->hasFile('logo')) {
-            $data['logo'] = $request->file('logo')->store('clientes/logos', 'public');
+            $data['logo'] = $request->file('logo')->store('logos', 'public');
         }
 
         $cliente = Client::create($data);
@@ -58,7 +58,7 @@ class ClienteController extends Controller
             if ($cliente->logo) {
                 Storage::disk('public')->delete($cliente->logo);
             }
-            $data['logo'] = $request->file('logo')->store('clientes/logos', 'public');
+            $data['logo'] = $request->file('logo')->store('logos', 'public');
         }
 
         $cliente->update($data);

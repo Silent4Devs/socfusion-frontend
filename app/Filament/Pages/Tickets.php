@@ -10,6 +10,7 @@ class Tickets extends Page
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
 
     protected static string $view = 'filament.pages.tickets';
+    protected ?string $heading = '';
 
     public $tickets;
     public $items;
