@@ -463,15 +463,16 @@
     
     @livewire('pdf-modal')
 
-    <div id="ws-loading" class="fixed top-4 right-4 z-50">
-        <div class="flex items-center space-x-2 bg-white p-2 rounded shadow" id="loading-indicator">
-            <svg class="animate-spin h-5 w-5 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-            </svg>
-            <span class="text-sm">Conectando...</span>
+        <div id="ws-loading" class="fixed top-4 right-4 z-50">
+            <div class="flex items-center space-x-2 bg-white dark:bg-gray-900 p-2 rounded shadow dark:shadow-lg" id="loading-indicator">
+                <svg class="animate-spin h-5 w-5 text-gray-800 dark:text-gray-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span class="text-sm text-gray-800 dark:text-gray-100">Conectando...</span>
+            </div>
         </div>
-    </div>
+
 
     <x-filament::section class="!p-0 overflow-hidden" compact>
 
