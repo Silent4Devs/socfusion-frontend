@@ -124,14 +124,33 @@ class Clients extends Page
 
     public function update()
     {
+        $this->validate([
+            'name' => 'required|string|max:255|unique:clients',
+            'email' => 'required|email|unique:clients,email,' . $this->clientId,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'logo' => 'nullable|image|max:2048',
+        ]);
+
         $client = Client::findOrFail($this->clientId);
+
+        $logoPath = null;
+        if ($this->logo) {
+            $logoPath = $this->logo->store('logos', 'public');
+        }
+
         $client->update([
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
+            'logo' => $logoPath,
         ]);
-        $this->reset();
+        $this->reset(['name', 'email', 'phone', 'address', 'logo']);
+        $this->allClients  = Client::orderBy('name')->get();
+        $this->dispatch('success-action');
+        $this->dispatch('client-edited');
+        $this->mount();
     }
     
     protected $rules = [
@@ -162,6 +181,7 @@ class Clients extends Page
         $this->reset();
         $this->clients = Client::orderBy('name')->get();
         $this->total = $this->clients->count();
+        $this->dispatch('success-action');
         $this->dispatch('client-created');
         
     }

@@ -185,7 +185,7 @@
             </div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div class="inline-block align-bottom bg-white dark:bg-gray-900 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-200 dark:border-white/10">
-            <form id="client-form" enctype="multipart/form-data">
+            <form id="client-form" enctype="multipart/form-data" wire:submit.prevent="{{ $clientId ? 'update' : 'save' }}">
                 <div class="p-6 space-y-6">
                     <h3 id="modal-title" class="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-400 dark:to-blue-600">
                         Datos del Cliente
@@ -264,9 +264,8 @@
                         Cancelar
                     </button>
                     <button 
-                        type="button" 
-                        wire:click="{{ $clientId ? 'update' : 'save' }}" 
-                        x-on:click="open = false"
+                        type="submit" 
+                        @success-action.window="open = false"
                     class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-600 rounded-lg text-white hover:from-blue-400 hover:to-blue-600 transition-all shadow-lg shadow-blue-600/20">
 
                         {{ $clientId ? 'Actualizar Cliente' : 'Guardar Cliente' }}
@@ -300,6 +299,11 @@
 
         window.addEventListener('client-created', () => {
             window.showToastSuccess("Cliente creado con éxito");
+            
+        });
+
+        window.addEventListener('client-edited', () => {
+            window.showToastSuccess("Cliente editado con éxito");
             
         });
     </script>
