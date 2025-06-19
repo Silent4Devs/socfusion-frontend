@@ -125,7 +125,7 @@ class Clients extends Page
     public function update()
     {
         $this->validate([
-            'name' => 'required|string|max:255|unique:clients',
+            'name' => 'required|string|max:255|unique:clients,name,'. $this->clientId,
             'email' => 'required|email|unique:clients,email,' . $this->clientId,
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
