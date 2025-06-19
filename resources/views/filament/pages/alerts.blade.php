@@ -1,10 +1,33 @@
 <x-filament-panels::page>
     
     <script>
-    function handleClassification(level, id, type) {
-        console.log(`Clasificación seleccionada: ${level}, para la alarma con ID: ${id}`);
-        
-    };
+        async function handleClassification(level, id, type) {
+            console.log(`Clasificación seleccionada: ${level}, para la alarma con ID: ${id}`);
+            const url = "{{ $iaServer }}/alarms/classify"; 
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: type,                
+                        alarm_id: id,              
+                        classification: level      
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                } else {
+                    const errorData = await response.json();
+                }
+            } catch (error) {
+                alert('Error de red al intentar clasificar la alarma.');
+                console.error('Network error:', error);
+            }
+        }
+
     </script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script> 
@@ -36,8 +59,8 @@
         <div class="flex gap-4" 
         x-data="{ openReportModal: false,  
             createTicket: false,
-            commentstTicket: '',
-            assignTicket: null,
+            commentsTicket: '',
+            assingTicket: null,
             comments: '',
             evidence: null,
             alarmId: null,
@@ -61,7 +84,7 @@
             },
 
             submitReport() {
-                $wire.generateReport(this.alarmId, this.alarmType, this.alarmMessage, this.comments);
+                $wire.generateReport(this.alarmId, this.alarmType, this.alarmMessage, this.comments, this.createTicket, this.commentsTicket, this.assingTicket);
 
                 this.resetForm();
                 this.openReportModal = false;
@@ -389,7 +412,11 @@
                             </button>
                             @else
                             <button 
-                                @click="confirmReport({{ $alarm['id'] }}, '{{ $alarm['alarm_type'] }}', `{{ $alarm['message_raw'] }} - PRTG`); showDetails = false"
+                                @click="confirmReport(
+                                    {{ $alarm['id'] }},
+                                    '{{ $alarm['alarm_type'] }}',
+                                    {{ json_encode($alarm['message_raw'] . ' - PRTG') }}
+                                ); showDetails = false"
                                 class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 flex items-center space-x-2 border border-indigo-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -716,7 +743,11 @@
                             </button>
                             @else
                             <button 
-                                @click="confirmReport({{ $alarm['id'] }}, '{{ $alarm['alarm_type'] }}', `{{ $alarm['message_raw'] }} - PRTG`); showDetails = false"
+                                @click="confirmReport(
+                                    {{ $alarm['id'] }},
+                                    '{{ $alarm['alarm_type'] }}',
+                                    {{ json_encode($alarm['message_raw'] . ' - PRTG') }}
+                                ); showDetails = false"
                                 class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 hover:bg-gradient-to-r hover:from-indigo-700 hover:to-purple-700 flex items-center space-x-2 border border-indigo-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -752,7 +783,7 @@
                     <span class="font-medium">Nuevo</span> Reporte 
                 </h3>
                 
-                <div class="space-y-5">
+                <div class="space-y-3">
                     <div class="group relative">
                         <input x-model="comments" 
                                type="text" 
@@ -795,7 +826,7 @@
                         </div>
                     </div>
 
-                    <label class="flex items-center space-x-3 cursor-pointer select-none mb-4">
+                    <label class="flex items-center space-x-2 cursor-pointer select-none mb-4">
                         <input
                             type="checkbox"
                             x-model="createTicket"
@@ -810,10 +841,10 @@
                         x-transition:leave="transition ease-in duration-200"
                         x-transition:leave-start="opacity-100 translate-y-0"
                         x-transition:leave-end="opacity-0 translate-y-2"
-                        class="p-4 mt-2">
+                        class="p-2 mt-0">
             
                         <div class="mb-3">
-                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">Comentarios ticket</label>
+                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">Comentarios para el ticket (opcional)</label>
                             <textarea
                                 x-model="commentsTicket"
                                 class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"
@@ -821,7 +852,7 @@
                             ></textarea>
                         </div>
                         <div>
-                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">Asignar a</label>
+                            <label class="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1">Asignar a*</label>
                             <select
                                 x-model="assingTicket"
                                 class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"
