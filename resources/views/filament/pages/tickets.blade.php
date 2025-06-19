@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="p-6 min-h-screen transition-colors duration-300">
+    <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false}">
        
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Tickets</h1>
@@ -27,12 +27,12 @@
                 </select>
             </div>
             
-            <!-- <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 flex items-center gap-2 w-full md:w-auto justify-center">
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 flex items-center gap-2 w-full md:w-auto justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Nuevo Ticket
-            </button> -->
+            </button>
         </div>
 
         <div class="bg-white rounded-lg shadow border border-gray-200 dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
