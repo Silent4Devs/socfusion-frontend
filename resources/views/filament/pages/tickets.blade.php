@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false}">
+    <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false, showNewModal: false}">
        
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Tickets</h1>
@@ -27,7 +27,7 @@
                 </select>
             </div>
             
-            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 flex items-center gap-2 w-full md:w-auto justify-center">
+            <button @click="showNewModal = true" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 flex items-center gap-2 w-full md:w-auto justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -209,6 +209,130 @@
                     </nav>
                 </div>
 
+                </div>
+            </div>
+        </div>
+
+        <div 
+            x-show="showNewModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            @click.away="showNewModal = false"
+        >
+            <div 
+                class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl"
+                @click.stop
+            >
+               
+                <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Crear Nuevo Ticket</h3>
+                    <button 
+                        @click="showNewModal = false"
+                        class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                    >
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+             
+                <div class="p-6 space-y-6">
+                    <form @submit.prevent="submitTicket">
+                        <div>
+                            <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Descripción*</label>
+                            <textarea 
+                                id="description" 
+                                rows="4" 
+                                class="w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                placeholder="Describe el problema o solicitud..."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <!-- Campos de selección en grid responsive -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Tipo de Ticket -->
+                            <div>
+                                <label for="ticketType" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tipo de Ticket*</label>
+                                <select 
+                                    id="ticketType" 
+                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    required
+                                >
+                                    <option value="">Seleccionar...</option>
+                                    <option value="soporte">Soporte Técnico</option>
+                                    <option value="incidente">Incidente</option>
+                                    <option value="requerimiento">Requerimiento</option>
+                                    <option value="mejora">Solicitud de Mejora</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="company" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Compañía*</label>
+                                <select 
+                                    id="company" 
+                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    required
+                                >
+                                    <option value="">Seleccionar...</option>
+                                    <option value="company1">Compañía A</option>
+                                    <option value="company2">Compañía B</option>
+                                    <option value="company3">Compañía C</option>
+                                </select>
+                            </div>
+
+                         
+                            <div>
+                                <label for="assignedTo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Asignado a*</label>
+                                <select 
+                                    id="assignedTo" 
+                                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                    required
+                                >
+                                    <option value="">Seleccionar...</option>
+                                    <option value="user1">Usuario 1</option>
+                                    <option value="user2">Usuario 2</option>
+                                    <option value="user3">Usuario 3</option>
+                                </select>
+                            </div>
+                        </div>
+
+                     
+                        <div>
+                            <label for="comments" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comentarios Adicionales</label>
+                            <textarea 
+                                id="comments" 
+                                rows="2" 
+                                class="w-full px-3 py-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                placeholder="Notas adicionales..."
+                            ></textarea>
+                        </div>
+                    </form>
+                </div>
+
+             
+                <div class="flex items-center justify-end p-4 border-t dark:border-gray-700 space-x-3">
+                    <button 
+                        @click="showNewModal = false"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-white"
+                    >
+                        Cancelar
+                    </button>
+                    <button 
+                        @click="submitTicket"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 flex items-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Crear Ticket
+                    </button>
                 </div>
             </div>
         </div>
