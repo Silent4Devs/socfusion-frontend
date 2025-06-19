@@ -28,7 +28,7 @@ class PdfModal extends Component
     public function showPdf($file)
     {
         $document = Document::where('full_name', $file)->first();
-
+        
         if (!$document) {
             $this->dispatch('pdf-error');
             return;
@@ -37,11 +37,9 @@ class PdfModal extends Component
         $extension = strtolower(pathinfo($document->name, PATHINFO_EXTENSION));
         $basename = pathinfo($document->name, PATHINFO_FILENAME);
         $pdfName = ($extension === 'doc' || $extension === 'docx') ? $basename . '.pdf' : $document->name . '.pdf';
-
+        
         $storagePath = 'documents/' . $pdfName;
-
-        if (!Storage::exists($storagePath)) {
-
+        if (!Storage::disk('public')->exists($storagePath)){
             $this->dispatch('pdf-error');
             return;
         }
