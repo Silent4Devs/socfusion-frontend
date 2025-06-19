@@ -78,7 +78,13 @@ window.showModalInfo = function(message) {
   });
 };
 
-window.showModalConfirm = function(message, confirmText = 'Sí', cancelText = 'No') {
+window.showModalConfirm = function (
+  message,
+  confirmText = 'Sí',
+  cancelText = 'No'
+) {
+  const dark = isDarkMode();
+
   return Swal.fire({
     icon: 'question',
     title: '¿Estás seguro?',
@@ -86,9 +92,15 @@ window.showModalConfirm = function(message, confirmText = 'Sí', cancelText = 'N
     showCancelButton: true,
     confirmButtonText: confirmText,
     cancelButtonText: cancelText,
-    confirmButtonColor: '#6366f1',
-    cancelButtonColor: '#f472b6',
-    background: isDarkMode() ? '#23272F' : '#fff',
-    color: isDarkMode() ? '#fff' : '#23272F'
+    confirmButtonColor: '#4f46e5',
+    cancelButtonColor: '#e11d48',
+    background: dark ? '#1f2937' : '#f9fafb', 
+    color: dark ? '#f9fafb' : '#1f2937',      
+    customClass: {
+      popup: 'rounded-2xl shadow-xl',
+      confirmButton: 'px-5 py-2 font-semibold text-sm',
+      cancelButton: 'px-5 py-2 font-semibold text-sm'
+    },
+    buttonsStyling: false 
   });
 };
