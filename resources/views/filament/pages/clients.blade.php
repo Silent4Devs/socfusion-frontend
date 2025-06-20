@@ -251,10 +251,15 @@
 
                         <div>
                             <label ...>Logo</label>
-                            <input type="file" wire:model.defer="logo" accept="image/*" class="block w-full ...">
+                            <input type="file" wire:model.live="logo" accept="image/*" class="block w-full ...">
                             @error('logo') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                             @if ($logo)
-                                <img src="{{ $logo->temporaryUrl() }}" class="mt-2 w-14 h-14 rounded object-cover" />
+                                @if (is_object($logo) && method_exists($logo, 'temporaryUrl'))
+                                    <img src="{{ $logo->temporaryUrl() }}" class="mt-2 w-14 h-14 rounded object-cover" />
+                                @else
+                               
+                                    <img src="{{ Storage::url($logo) }}" class="mt-2 w-14 h-14 rounded object-cover" />
+                                @endif
                             @endif
                         </div>
                     </div>

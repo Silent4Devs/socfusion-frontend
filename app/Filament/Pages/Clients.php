@@ -6,6 +6,8 @@ use Livewire\Attributes\On;
 use Filament\Pages\Page;
 use App\Models\Client;
 use Livewire\WithFileUploads;
+use Illuminate\Support\Facades\Storage;
+
 
 class Clients extends Page
 {
@@ -118,45 +120,62 @@ class Clients extends Page
         $this->email = $client->email;
         $this->phone = $client->phone;
         $this->address = $client->address;
+        $this->logo = $client->logo;
         
         $this->dispatch('open-client-modal');
+    }
+
+    protected function isLogoFile()
+    {
+        return is_object($this->logo) && method_exists($this->logo, 'store');
     }
 
     public function update()
     {
         $this->validate([
-            'name' => 'required|string|max:255|unique:clients,name,'. $this->clientId,
+            'name' => 'required|string|max:255|unique:clients,name,' . $this->clientId,
             'email' => 'required|email|unique:clients,email,' . $this->clientId,
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|regex:/^\d+$/',
             'address' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|max:2048',
+            'logo' => $this->isLogoFile() ? 'nullable|image|max:2048' : 'nullable|string',
         ]);
 
         $client = Client::findOrFail($this->clientId);
 
         $logoPath = null;
-        if ($this->logo) {
+
+        if ($this->isLogoFile()) {
+            if ($client->logo && Storage::disk('public')->exists($client->logo)) {
+                Storage::disk('public')->delete($client->logo);
+            }
+
             $logoPath = $this->logo->store('logos', 'public');
         }
 
-        $client->update([
+        $data = [
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
-            'logo' => $logoPath,
-        ]);
-        $this->reset(['name', 'email', 'phone', 'address', 'logo']);
-        $this->allClients  = Client::orderBy('name')->get();
+        ];
+
+        if ($logoPath) {
+            $data['logo'] = $logoPath;
+        }
+
+        $client->update($data);
+
+        $this->reset(['name', 'email', 'phone', 'address', 'logo', 'clientId']);
+        $this->allClients = Client::orderBy('name')->get();
         $this->dispatch('success-action');
         $this->dispatch('client-edited');
         $this->mount();
     }
     
     protected $rules = [
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:255|unique:clients,name',
         'email' => 'required|email|unique:clients,email',
-        'phone' => 'nullable|string|max:20',
+        'phone' => 'nullable|string|max:20|regex:/^\d+$/',
         'address' => 'nullable|string|max:255',
         'logo' => 'nullable|image|max:2048',
     ];
