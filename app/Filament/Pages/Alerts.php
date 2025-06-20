@@ -42,14 +42,40 @@ class Alerts extends Page
 
             $this->assignees = $distinct['assignees']     ?? [];
         }
+
+        $response = Http::get($this->iaServer . '/alarms');
+        if ($response->successful()) {
+            $alarms = $response->json();
+
+            $alarms = collect($alarms)->map(function ($alarm) {
+                if (isset($alarm['message_raw']) && !is_null($alarm['message_raw'])) {
+                    $alarm['message_raw'] = $alarm['message_raw'] . ' - PRTG';
+                }
+                return $alarm;
+            })->toArray();
+
+            $this->alarms = $alarms;
+            $this->filteredAlarms = $alarms;
+        } 
     }
 
     #[On('update_Alarms')] 
-    public function update_Alarms($data)
+    public function update_Alarms($data = null)
     {   
-        $newAlarms = collect($data)->values()->toArray();
-        $this->alarms = array_merge($newAlarms, $this->alarms);
-        $this->filteredAlarms = $this->filterAlarms();
+        $response = Http::get($this->iaServer . '/alarms');
+        if ($response->successful()) {
+            $alarms = $response->json();
+
+            $alarms = collect($alarms)->map(function ($alarm) {
+                if (isset($alarm['message_raw']) && !is_null($alarm['message_raw'])) {
+                    $alarm['message_raw'] = $alarm['message_raw'] . ' - PRTG';
+                }
+                return $alarm;
+            })->toArray();
+
+            $this->alarms = $alarms;
+            $this->filteredAlarms = $alarms;
+        } 
     }
 
     public function updatedSearch($value)

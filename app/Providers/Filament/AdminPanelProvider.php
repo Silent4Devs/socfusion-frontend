@@ -21,6 +21,7 @@ use App\Filament\Resources\UserResource;
 use CWSPS154\UsersRolesPermissions\UsersRolesPermissionsPlugin;
 use TomatoPHP\FilamentSimpleTheme\FilamentSimpleThemePlugin;
 use Filament\Support\Assets\Js;
+use App\Filament\Pages\Auth\CustomLogin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,7 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
+            ->login(CustomLogin::class)
             ->brandName('Silent4Business')
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('2.5rem')
