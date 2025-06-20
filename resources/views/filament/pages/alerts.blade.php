@@ -127,9 +127,9 @@
                     @endif
 
                         @php
-                            $classification = $alarm['real_classification'] ?? $alarm['model_classification'];
+                            $classification_show = $alarm['real_classification'] ?? $alarm['model_classification'];
 
-                            switch ($classification) {
+                            switch ($classification_show) {
                                 case 'High':
                                     $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
                                     break;
@@ -153,7 +153,7 @@
                                         <path d="M10 2a4 4 0 100 8 4 4 0 000-8zm-6 14a6 6 0 1112 0H4z" />
                                     </svg>
                                 @endif
-                                {{ $classification }}
+                                {{ $classification_show }}
                             </span>
                         </div>
 
