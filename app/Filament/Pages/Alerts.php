@@ -9,6 +9,7 @@ use App\Models\Report;
 use App\Jobs\CreateReport;
 use Illuminate\Support\Facades\Redis;
 use Livewire\WithFileUploads;
+use App\Jobs\CreateTicket;
 
 class Alerts extends Page
 {
@@ -67,8 +68,14 @@ class Alerts extends Page
         });
     }
 
-    public function generateReport($alarmId, $alarmType, $title, $comments)
+    public function generateReport($alarmId, $alarmType, $title, $comments, $create_ticket, $comments_ticket, $assign_ticket)
     {
+
+        if ($create_ticket)
+        {
+            CreateTicket::dispatch($alarmId, $alarmType, $title, $create_ticket, $comments_ticket, $assign_ticket);
+        }
+        
         $evidencePath = null;
         if ($this->evidence) {
             $evidencePath = $this->evidence->store('reports_images', 'public');
@@ -94,7 +101,6 @@ class Alerts extends Page
 
         return response()->json(['message' => 'Your file is being processed.'], 200);
     }
-
 
 }
 

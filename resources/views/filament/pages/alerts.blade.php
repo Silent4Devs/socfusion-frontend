@@ -126,26 +126,36 @@
 
                     @endif
 
-                        @switch($alarm['model_classification'])
-                            @case('High')
-                                @php $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'; @endphp
-                                @break
-                            @case('Medium')
-                                @php $color = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'; @endphp
-                                @break
-                            @case('Low')
-                                @php $color = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'; @endphp
-                                @break
-                            @default
-                                @php $color = 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300'; @endphp
-                        @endswitch
+                        @php
+                            $classification = $alarm['real_classification'] ?? $alarm['model_classification'];
+
+                            switch ($classification) {
+                                case 'High':
+                                    $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+                                    break;
+                                case 'Medium':
+                                    $color = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
+                                    break;
+                                case 'Low':
+                                    $color = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+                                    break;
+                                default:
+                                    $color = 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
+                            }
+
+                            $isManual = !empty($alarm['real_classification']);
+                        @endphp
 
                         <div class="mt-1">
-                            <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $color }}">
-                               {{ $alarm['model_classification'] }}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold {{ $color }}">
+                                @if ($isManual)
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 2a4 4 0 100 8 4 4 0 000-8zm-6 14a6 6 0 1112 0H4z" />
+                                    </svg>
+                                @endif
+                                {{ $classification }}
                             </span>
                         </div>
-  
 
                     </div>
                         <div class="text-xs px-2 py-1 text-red-600">
@@ -252,10 +262,6 @@
                                 </div>
                             </template>
                         </div>
-                        @else
-                            <div class="mt-2 px-3 py-1 rounded text-sm text-gray-700 dark:text-gray-300 dark:border-gray-600">
-                                Clasificada: <strong>$alarm['real_classification']</strong>
-                            </div>
                         @endif
 
 
