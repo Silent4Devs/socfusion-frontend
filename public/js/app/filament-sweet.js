@@ -80,27 +80,57 @@ window.showModalInfo = function(message) {
 
 window.showModalConfirm = function (
   message,
-  confirmText = 'Sí',
-  cancelText = 'No'
+  confirmText = 'Confirmar',
+  cancelText = 'Cancelar',
+  options = {}
 ) {
   const dark = isDarkMode();
+  const defaultIcon = options.icon || 'question';
+  
+  // Configuración de colores para ambos modos
+  const colorScheme = {
+    light: {
+      background: '#ffffff',
+      text: '#1f2937',
+      confirmButton: '#4f46e5',
+      cancelButton: '#e11d48',
+      popupBorder: '#e5e7eb'
+    },
+    dark: {
+      background: '#1f2937',
+      text: '#f9fafb',
+      confirmButton: '#6366f1',
+      cancelButton: '#f43f5e',
+      popupBorder: '#374151'
+    }
+  };
+
+  const colors = dark ? colorScheme.dark : colorScheme.light;
 
   return Swal.fire({
-    icon: 'question',
-    title: '¿Estás seguro?',
-    html: message,
+    icon: defaultIcon,
+    title: options.title || '¿Estás seguro?',
+    html: `<div class="text-center">${message}</div>`,
     showCancelButton: true,
     confirmButtonText: confirmText,
     cancelButtonText: cancelText,
-    confirmButtonColor: '#4f46e5', 
-    cancelButtonColor: '#e11d48',  
-    background: dark ? '#1f2937' : '#f9fafb', 
-    color: dark ? '#f9fafb' : '#1f2937',      
-    customClass: {
-      popup: 'rounded-2xl shadow-xl',
-      confirmButton: 'px-5 py-2 font-semibold text-sm',
-      cancelButton: 'px-5 py-2 font-semibold text-sm'
+    confirmButtonColor: colors.confirmButton,
+    cancelButtonColor: colors.cancelButton,
+    background: colors.background,
+    color: colors.text,
+      customClass: {
+      popup: `rounded-xl shadow-2xl border ${dark ? 'border-gray-700' : 'border-gray-200'}`,
+      confirmButton: `px-5 py-2.5 font-medium text-sm rounded-lg transition-all hover:scale-[1.02] ${dark ? 'hover:shadow-indigo-500/20' : 'hover:shadow-indigo-200'} hover:shadow-lg`,
+      cancelButton: `px-5 py-2.5 font-medium text-sm rounded-lg transition-all hover:scale-[1.02] ${dark ? 'hover:shadow-rose-500/20' : 'hover:shadow-rose-200'} hover:shadow-lg`,
+      title: 'text-xl font-semibold mb-2',
+      htmlContainer: 'text-base'
     },
-    buttonsStyling: false
+    showClass: {
+      popup: 'animate__animated animate__fadeIn animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOut animate__faster'
+    },
+    ...options
   });
 };
