@@ -39,9 +39,10 @@
             <input 
                 type="text" 
                 placeholder="Buscar..." 
-                class="p-2 border rounded"
+                class="p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white dark:placeholder-gray-400"
                 wire:model.live="search"
             />
+
         </div>
             @php
                 $alarmsLeft = [];
@@ -208,9 +209,13 @@
                         </button>
                             
                         @if(empty($alarm['real_classification']))
-                        <div x-data="{ open: false, classification: '' }" class="relative" x-init="
-                            classification = '{{ $alarm['real_classification'] ?? '' }}';
-                        ">
+                        <div 
+                                x-data="{
+                                    open: false, 
+                                    classification: ''
+                                }" 
+                                class="relative"
+                            >
                             <template x-if="!classification">
                                 <div>
                                     <button @click="open = !open" class="flex items-center px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm">
