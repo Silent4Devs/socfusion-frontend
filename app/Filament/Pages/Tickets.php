@@ -27,6 +27,7 @@ class Tickets extends Page
     public $assignedTo;
     public $comments;
     public $showModal = true;
+    public $assignees, $ownerGroups, $organizations, $priorities, $serviceTypes;
 
     protected $rules = [
         'description' => 'required|min:10',
@@ -40,17 +41,36 @@ class Tickets extends Page
     {
         $baseUrl = config('services.ia_server');
         $response = Http::get($baseUrl . '/tickets/');
+        $data = $response->json();
+
 
         if ($response->successful()) {
-            $this->total = $response->json('total') ?? 300;
-            $this->items = $response->json('items') ?? [];
+            $this->total = $data['total'] ?? 300;
+            $this->items = $data['tickets'] ?? [];
             $this->totalPages = ceil(count($this->items) / $this->perPage);
+
+            $distinct = $data['distinct_values'] ?? [];
+
+            $this->assignees     = $distinct['assignees']     ?? [];
+            $this->ownerGroups   = $distinct['owner_groups']  ?? [];
+            $this->organizations = $distinct['organizations'] ?? [];
+            $this->priorities    = $distinct['priorities']    ?? [];
+            $this->serviceTypes  = $distinct['service_types'] ?? [];
+
             $this->updateTickets();
         } else {
+            $this->total = 0;
             $this->items = [];
             $this->tickets = [];
             $this->totalPages = 1;
+
+            $this->assignees = [];
+            $this->ownerGroups = [];
+            $this->organizations = [];
+            $this->priorities = [];
+            $this->serviceTypes = [];
         }
+
     }
 
     public function updateTickets()
@@ -95,7 +115,8 @@ class Tickets extends Page
         $this->updateTickets();
     }
 
-    public function submitTicket(){
+    public function submitTicket()
+    {
         $this->dispatch('ticket-error', [
             'message' => 'Error al conectarse a Remedy.'
         ]);
@@ -108,5 +129,18 @@ class Tickets extends Page
         }
         $this->page = $page;
         $this->updateTickets();
+    }
+
+    public function reasignarTicket($person)    
+    {
+        $this->dispatch('ticket-error', [
+            'message' => 'Error al conectarse a Remedy.'
+        ]);
+    }
+
+    public function changeStatus($status){
+        $this->dispatch('ticket-error', [
+            'message' => 'Error al conectarse a Remedy.'
+        ]);
     }
 }

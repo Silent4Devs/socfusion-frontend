@@ -8,7 +8,7 @@
 
     </script>
 
-    <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false, showNewModal: false}">
+    <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false, showNewModal: false, showReassignModal : false}">
        
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Tickets</h1>
@@ -124,18 +124,121 @@
                                 </td>
 
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <div class="flex justify-end gap-2">
-                                        <button class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                    <div class="flex justify-end gap-2" x-data="{showReassignSelect : false, showStatusSelect : false}">
+                                        <div class="relative group">
+                                            <button 
+                                                @click="showDetailModal = true"
+                                                class="relative p-1.5 rounded-full group transition-all duration-200"
+                                                aria-label="Ver detalle"
+                                                >
+                                                <div class="relative">
+                                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+                                                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+                                                    </svg>
+                                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <div class="h-1 w-1 rounded-full bg-blue-600 dark:bg-blue-300"></div>
+                                                    </div>
+                                                </div>
+                                                <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                                                    Ver detalles
+                                                </span>
+                                            </button>
+                                        </div>
+                                        <div class="relative">
+                                            <button 
+                                                @click="showReassignSelect = !showReassignSelect"
+                                                class="p-1 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                                                aria-label="Reasignar ticket"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                                </svg>
+                                                <span class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs bg-gray-800 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
+                                                Reasignar ticket
+                                                </span>
+                                            </button>
+                                            
+                                                <div 
+                                                    x-show="showReassignSelect"
+                                                    @click.away="showReassignSelect = false"
+                                                    class="absolute right-0 z-10 mt-1 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 focus:outline-none"
+                                                    style="display: none;"
+                                                >
+                                                    <div class="py-1">
+                                                        <p class="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400">Asignar a</p>
+                                                        <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                                                        
+                                                        @foreach($assignees as $assignee)
+                                                            <button 
+                                                                wire:click.prevent="reasignarTicket('{{ $assignee }}')"
+                                                                @click="showReassignSelect = false"
+                                                                class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                            >
+                                                                <span class="truncate">{{ $assignee }}</span>
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                        </div>
+
+                                        <div class="relative group overflow-x-show">
+                                            <button 
+                                            @click="showStatusSelect = !showStatusSelect"
+                                            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                            aria-label="Cambiar estatus"
+                                            >
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 5.943 7.523 3 10 3c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                             </svg>
-                                        </button>
-                                        <button class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                        </button>
+                                            </button>
+                                            <span class="group-hover:opacity-100 opacity-0 absolute bottom-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 text-xs bg-gray-800 text-white rounded whitespace-nowrap transition-opacity duration-200">
+                                                Estatus
+                                            </span>
+                                                <div 
+                                                x-show="showStatusSelect"
+                                                @click.away="showStatusSelect = false"
+                                                class="absolute right-0 z-10 mt-1 w-40 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-md border border-gray-100 dark:border-gray-700 focus:outline-none"
+                                                style="display: none;"
+                                                >
+                                                <div class="py-1">
+                                                    <p class="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400">Estado</p>
+                                                    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                                                    <button 
+                                                    wire:click.prevent="changeStatus('Abierto')"
+                                                    @click="showStatusSelect = false"
+                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                    >
+                                                    <span class="w-2 h-2 mr-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                                    <span>Abierto</span>
+                                                    </button>
+                                                    <button 
+                                                    wire:click.prevent="changeStatus('Abierto')"
+                                                    @click="showStatusSelect = false"
+                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                    >
+                                                    <span class="w-2 h-2 mr-2 bg-yellow-500 rounded-full flex-shrink-0"></span>
+                                                    <span>En progreso</span>
+                                                    </button>
+                                                    <button 
+                                                    wire:click.prevent="changeStatus('Abierto')"
+                                                    @click="showStatusSelect = false"
+                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                    >
+                                                    <span class="w-2 h-2 mr-2 bg-green-500 rounded-full flex-shrink-0"></span>
+                                                    <span>Resuelto</span>
+                                                    </button>
+                                                    <button 
+                                                    wire:click.prevent="changeStatus('Abierto')"
+                                                    @click="showStatusSelect = false"
+                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                    >
+                                                    <span class="w-2 h-2 mr-2 bg-gray-500 rounded-full flex-shrink-0"></span>
+                                                    <span>Cerrado</span>
+                                                    </button>
+                                                </div>
+                                                </div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -231,8 +334,7 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-            @click.away="showNewModal = false"
-        >
+            @click.away="showNewModal = false">
             <div @click.stop class="relative w-50 rounded-xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-white/20 dark:border-gray-600/30 shadow-2xl overflow-hidden">
 
                 <div class="h-1 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
@@ -276,10 +378,10 @@
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                <option value="soporte">Soporte Técnico</option>
-                                <option value="incidente">Incidente</option>
-                                <option value="requerimiento">Requerimiento</option>
-                                <option value="mejora">Solicitud de Mejora</option>
+                                @foreach ($serviceTypes as $type)
+                                    <option value="{{ $type }}">{{ ucfirst($type) }}</option>
+                                @endforeach
+
                             </select>
                             @error('ticketType') <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span> @enderror
                         </div>
@@ -293,9 +395,9 @@
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                <option value="company1">Compañía A</option>
-                                <option value="company2">Compañía B</option>
-                                <option value="company3">Compañía C</option>
+                                 @foreach ($organizations as $org)
+                                    <option value="{{ $org }}">{{ $org }}</option>
+                                @endforeach
                             </select>
                             @error('company') <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span> @enderror
                         </div>
@@ -309,9 +411,11 @@
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                <option value="user1">Usuario 1</option>
-                                <option value="user2">Usuario 2</option>
-                                <option value="user3">Usuario 3</option>
+
+                               @foreach ($assignees as $assignee)
+                                    <option value="{{ $assignee }}">{{ $assignee }}</option>
+                                @endforeach
+
                             </select>
                             @error('assignedTo') <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span> @enderror
                         </div>
@@ -359,5 +463,71 @@
 
             </div>
         </div>
+
+
+            <div x-show="showDetailModal" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 transition-opacity" @click="showDetailModal = false">
+                        <div class="absolute inset-0 bg-black opacity-70"></div>
+                    </div>
+                    
+                    <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+                        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 5.943 7.523 3 10 3c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Detalles del Ticket
+                        </h3>
+                        <button @click="showDetailModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="px-6 py-4 max-h-[70vh] overflow-y-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-medium text-gray-700 dark:text-gray-300">Información Básica</h4>
+                            <div class="mt-2 space-y-2">
+                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">ID:</span> <span class="text-gray-900 dark:text-white">TKT-2023-001</span></p>
+                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Estado:</span> <span class="px-2 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full text-xs">Abierto</span></p>
+                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Prioridad:</span> <span class="text-red-600 dark:text-red-400">Alta</span></p>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-700 dark:text-gray-300">Asignación</h4>
+                            <div class="mt-2 space-y-2">
+                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Asignado a:</span> <span class="text-gray-900 dark:text-white">John Doe</span></p>
+                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Grupo:</span> <span class="text-gray-900 dark:text-white">Soporte TI</span></p>
+                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Fecha creación:</span> <span class="text-gray-900 dark:text-white">15/06/2023 10:30</span></p>
+                            </div>
+                        </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Descripción</h4>
+                        <div class="mt-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <p class="text-sm text-gray-800 dark:text-gray-200">El usuario reporta problemas para acceder al sistema de gestión. El error ocurre al intentar subir archivos mayores a 5MB. Se ha verificado que la conexión de red es estable y las credenciales son correctas.</p>
+                        </div>
+                        </div>
+                    </div>
+                    
+                    <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-end">
+                        <button 
+                        @click="showDetailModal = false" 
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white rounded-md text-sm font-medium transition-colors"
+                        >
+                        Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    
+
 </x-filament-panels::page>
