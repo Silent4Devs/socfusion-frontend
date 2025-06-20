@@ -265,7 +265,14 @@
                     </div>
                 </div>
                 <div class="px-6 py-4 bg-gray-100 dark:bg-gray-800/50 border-t border-gray-200 dark:border-white/10 flex justify-end space-x-3">
-                    <button type="button" @click="open = false" class="px-6 py-2.5 border border-gray-300 dark:border-white/20 rounded-lg text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                  <button 
+                        type="button" 
+                        @click="
+                            open = false;
+                            $wire.set('clientId', null)
+                        "
+                        class="px-6 py-2.5 border border-gray-300 dark:border-white/20 rounded-lg text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                    >
                         Cancelar
                     </button>
                     <button 
