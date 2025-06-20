@@ -226,4 +226,9 @@ class Clients extends Page
             ->get();
     }
 
+    public function clearClientFields()
+    {
+
+        $this->reset(['name', 'email', 'phone', 'address', 'logo', 'clientId']);
+    }
 }

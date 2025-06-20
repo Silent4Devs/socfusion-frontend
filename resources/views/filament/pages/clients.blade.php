@@ -269,7 +269,7 @@
                         type="button" 
                         @click="
                             open = false;
-                            $wire.set('clientId', null)
+                            $wire.clearClientFields()
                         "
                         class="px-6 py-2.5 border border-gray-300 dark:border-white/20 rounded-lg text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                     >

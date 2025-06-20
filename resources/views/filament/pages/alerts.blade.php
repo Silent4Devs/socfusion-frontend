@@ -869,9 +869,9 @@
                                 class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:ring-primary-500 focus:border-primary-500"
                             >
                                 <option value="">Selecciona usuario</option>
-                                <option value="usuario1">Usuario 1</option>
-                                <option value="usuario2">Usuario 2</option>
-                                <option value="usuario3">Usuario 3</option>
+                                @foreach($assignees as $user)
+                                <option value="$user">{{ $user }}</option>
+                                @endforeach
                             </select>
                         </div>
                         
@@ -906,6 +906,10 @@
 
     window.addEventListener('new-report', function(event) {
         window.showToastSuccess(event.detail.message);
+    });
+
+    window.addEventListener('new-issue', function(event) {
+        window.showToastError(event.detail.message);
     });
 
     const socket = new WebSocket("ws://192.168.40.1:8000/alarms");

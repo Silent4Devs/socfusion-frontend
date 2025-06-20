@@ -27,10 +27,21 @@ class Alerts extends Page
     public $search = "";
     public $filteredAlarms = [];
     public $iaServer;
-
+    public $assignees;
+    
     public function mount()
     {
         $this->iaServer = config('services.ia_server');
+        $response = Http::get($this->iaServer  . '/tickets/');
+        $data = $response->json();
+
+
+        if ($response->successful()) {
+            
+            $distinct = $data['distinct_values'] ?? [];
+
+            $this->assignees = $distinct['assignees']     ?? [];
+        }
     }
 
     #[On('update_Alarms')] 
@@ -73,7 +84,7 @@ class Alerts extends Page
 
         if ($create_ticket)
         {
-            CreateTicket::dispatch($alarmId, $alarmType, $title, $create_ticket, $comments_ticket, $assign_ticket);
+            $this->dispatch('new-issue', message: 'Hubo un problema al conectarse con Remedy');
         }
         
         $evidencePath = null;
