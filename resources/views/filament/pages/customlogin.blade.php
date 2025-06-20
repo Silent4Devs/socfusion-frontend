@@ -274,7 +274,7 @@
                 
             <div class="text-sm text-white/80 max-w-xs mt-6 font-mono tracking-wide relative overflow-hidden typewriter">
                 <h4 class="inline-block whitespace-nowrap">
-                    Security Operations Center S4B
+                    Security Operations Center
                 </h4>
             </div>
         </div>
