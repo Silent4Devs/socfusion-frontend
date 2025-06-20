@@ -227,7 +227,7 @@
                             type="text"
                             wire:model.defer="phone"
                             class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/80 text-gray-800 dark:text-gray-100 px-3 py-2 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                            placeholder="Ej. 55 5555 5555"
+                            placeholder="Ej. 5555555555"
                             autocomplete="off"
                         >
                         @error('phone')
