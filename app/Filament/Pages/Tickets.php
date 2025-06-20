@@ -28,6 +28,7 @@ class Tickets extends Page
     public $comments;
     public $showModal = true;
     public $assignees, $ownerGroups, $organizations, $priorities, $serviceTypes;
+    public $selectedTicket, $error, $loading;
 
     protected $rules = [
         'description' => 'required|min:10',
@@ -142,5 +143,101 @@ class Tickets extends Page
         $this->dispatch('ticket-error', [
             'message' => 'Error al conectarse a Remedy.'
         ]);
+    }
+
+    public function getTicketDetails($id)
+    {
+        try {
+            $this->loading = true;
+            $this->error = null;
+            
+    
+            $ticket = collect($this->items)->firstWhere('id', $id);
+
+            if (!$ticket) {
+                throw new \Exception("Ticket no encontrado");
+            }
+
+            $this->selectedTicket = $this->formatTicketDetails($ticket);
+
+        } catch (\Exception $e) {
+            $this->error = $e->getMessage();
+            $this->selectedTicket = null;
+        } finally {
+            $this->loading = false;
+        }
+    }
+
+    /**
+     * Formatea los detalles del ticket para visualización
+     * 
+     * @param array $ticket Datos del ticket
+     * @return array Datos formateados
+     */
+    protected function formatTicketDetails($ticket)
+    {
+        return [
+            'Información Básica' => [
+                'ID' => $ticket['id'],
+                'Número de Incidente' => $ticket['incident_number'],
+                'Solicitante' => $ticket['submitter'],
+                'Fecha de Creación' => $this->formatDate($ticket['submit_date']),
+                'Estado' => $ticket['status'],
+                'Prioridad' => $ticket['priority'],
+                'Tipo de Servicio' => $ticket['service_type']
+            ],
+            'Asignación' => [
+                'Asignado a' => $ticket['assignee'],
+                'Grupo' => $ticket['owner_group'],
+                'Organización' => $ticket['organization'],
+                'Empresa' => $ticket['company'],
+                'Sitio' => $ticket['site']
+            ],
+            'Categorización' => [
+                'Categoría Nivel 1' => $ticket['categorization_tier_1'],
+                'Categoría Nivel 2' => $ticket['categorization_tier_2'],
+                'Categoría Nivel 3' => $ticket['categorization_tier_3'],
+                'Producto Nivel 1' => $ticket['product_categorization_tier_1'],
+                'Producto Nivel 2' => $ticket['product_categorization_tier_2'],
+                'Producto Nivel 3' => $ticket['product_categorization_tier_3']
+            ],
+            'Detalles' => [
+                'Descripción' => $ticket['description'],
+                'Detalles Adicionales' => $ticket['detailed_description'] ?? 'N/A',
+                'Fecha del Evento' => $this->formatDate($ticket['time_of_event']),
+                'Historial de Estados' => $this->formatStatusHistory($ticket['status_history'] ?? [])
+            ],
+            'Contacto' => [
+                'Email' => $ticket['internet_email'],
+                'Compañía de Soporte' => $ticket['assigned_support_company']
+            ]
+        ];
+    }
+
+    protected function formatDate($dateString)
+    {
+        try {
+            return \Carbon\Carbon::parse($dateString)->format('d/m/Y H:i:s');
+        } catch (\Exception $e) {
+            return $dateString;
+        }
+    }
+
+
+    protected function formatStatusHistory($history)
+    {
+        if (empty($history)) return 'No disponible';
+        
+        $formatted = [];
+        foreach ($history as $status => $data) {
+            $formatted[] = sprintf(
+                "%s: %s (%s)",
+                $status,
+                $data['user'],
+                $this->formatDate($data['timestamp'])
+            );
+        }
+        
+        return implode("\n", $formatted);
     }
 }

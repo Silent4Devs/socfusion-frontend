@@ -127,7 +127,7 @@
                                     <div class="flex justify-end gap-2" x-data="{showReassignSelect : false, showStatusSelect : false}">
                                         <div class="relative group">
                                             <button 
-                                                @click="showDetailModal = true"
+                                                @click="$wire.getTicketDetails({{ $ticket['id'] }}); showDetailModal = true"                                                
                                                 class="relative p-1.5 rounded-full group transition-all duration-200"
                                                 aria-label="Ver detalle"
                                                 >
@@ -474,10 +474,6 @@
                     <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
                         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-700">
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 5.943 7.523 3 10 3c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
                         Detalles del Ticket
                         </h3>
                         <button @click="showDetailModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
@@ -488,33 +484,31 @@
                     </div>
                     
                     <div class="px-6 py-4 max-h-[70vh] overflow-y-auto">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <h4 class="font-medium text-gray-700 dark:text-gray-300">Información Básica</h4>
-                            <div class="mt-2 space-y-2">
-                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">ID:</span> <span class="text-gray-900 dark:text-white">TKT-2023-001</span></p>
-                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Estado:</span> <span class="px-2 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full text-xs">Abierto</span></p>
-                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Prioridad:</span> <span class="text-red-600 dark:text-red-400">Alta</span></p>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-medium text-gray-700 dark:text-gray-300">Asignación</h4>
-                            <div class="mt-2 space-y-2">
-                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Asignado a:</span> <span class="text-gray-900 dark:text-white">John Doe</span></p>
-                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Grupo:</span> <span class="text-gray-900 dark:text-white">Soporte TI</span></p>
-                            <p class="text-sm"><span class="font-medium text-gray-500 dark:text-gray-400">Fecha creación:</span> <span class="text-gray-900 dark:text-white">15/06/2023 10:30</span></p>
-                            </div>
-                        </div>
-                        </div>
-                        
-                        <div class="mt-6">
-                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Descripción</h4>
-                        <div class="mt-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <p class="text-sm text-gray-800 dark:text-gray-200">El usuario reporta problemas para acceder al sistema de gestión. El error ocurre al intentar subir archivos mayores a 5MB. Se ha verificado que la conexión de red es estable y las credenciales son correctas.</p>
-                        </div>
-                        </div>
+                        @if ($selectedTicket)
+                            @foreach ($selectedTicket as $section => $fields)
+                                <div class="mb-6">
+                                    <h4 class="font-medium text-gray-700 dark:text-gray-300 border-b pb-1 mb-3">{{ $section }}</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        @foreach ($fields as $label => $value)
+                                            <p class="text-sm">
+                                                <span class="font-medium text-gray-500 dark:text-gray-400">{{ $label }}:</span>
+                                                <span class="text-gray-900 dark:text-white">
+                                                    @if(is_array($value))
+                                                        {{ implode(', ', $value) }}
+                                                    @else
+                                                        {!! nl2br(e($value)) !!}
+                                                    @endif
+                                                </span>
+                                            </p>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="text-center text-sm text-gray-500 dark:text-gray-400">No se encontraron datos para este ticket.</p>
+                        @endif
                     </div>
+
                     
                     <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex justify-end">
                         <button 
