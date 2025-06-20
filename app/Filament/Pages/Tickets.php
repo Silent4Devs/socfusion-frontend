@@ -20,6 +20,21 @@ class Tickets extends Page
     public $totalPages = 1;
     public $search = '';
     public $status = '';
+    
+    public $description;
+    public $ticketType;
+    public $company;
+    public $assignedTo;
+    public $comments;
+    public $showModal = true;
+
+    protected $rules = [
+        'description' => 'required|min:10',
+        'ticketType' => 'required',
+        'company' => 'required',
+        'assignedTo' => 'required',
+        'comments' => 'nullable',
+    ];
 
     public function mount(): void
     {
@@ -80,6 +95,11 @@ class Tickets extends Page
         $this->updateTickets();
     }
 
+    public function submitTicket(){
+        $this->dispatch('ticket-error', [
+            'message' => 'Error al conectarse a Remedy.'
+        ]);
+    }
 
     public function goToPage($page)
     {
