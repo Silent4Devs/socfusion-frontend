@@ -94,7 +94,7 @@ class Dashboard extends Page
         ->get();
         
         $this->total_clients = Client::count();
-        $response = Http::get($this->ia_server . '/alarms/logrhythm');
+        $response = Http::get($this->ia_server . '/alarms/');
         $data = $response->json() ?? [];
         $this->all_alerts = array_slice($data, 0,21);
         $this->updateVisibleAlerts();
