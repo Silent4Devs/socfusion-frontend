@@ -216,17 +216,17 @@
         
             <div class="relative mb-8 group" style="perspective: 1000px;">
                 <div class="absolute -inset-4 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-600/10 
-                            blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            blur-xl opacity-0 transition-opacity duration-500"></div>
                 
                 <div class="relative w-28 h-28 rounded-full transition-all duration-700 group-hover:rotate-y-180">
                     <img src="{{ asset('images/logo.png') }}" alt="SOCfusion Logo" 
                         class="absolute w-full h-full rounded-full shadow-2xl border-4 border-white/30 dark:border-gray-800/80 
-                                object-cover transition-all duration-500 group-hover:opacity-0
+                                object-cover transition-all duration-500 
                                 backdrop-blur-sm bg-white/10 p-1">
                     
                     <div class="absolute w-full h-full rounded-full bg-[url('{{ asset('images/logo.png') }}')] 
                                 bg-cover bg-center filter contrast-125 brightness-110 saturate-150 
-                                opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                                opacity-0 transition-opacity duration-300
                                 border-2 border-teal-400/50 shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                         <div class="absolute inset-0 bg-[linear-gradient(135deg,#00f2fe_0%,#4facfe_50%,transparent_100%)] 
                                     mix-blend-overlay opacity-70"></div>
