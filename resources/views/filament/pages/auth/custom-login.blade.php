@@ -1,5 +1,5 @@
 <div>
-        @vite('resources/css/app.css') 
+    @vite('resources/css/app.css') 
     <style>
 
     main {
@@ -18,13 +18,11 @@
     }
 
     @media screen and (min-width: 768px) {
-    main {
-        padding: 2rem;
-        background-image: url('ruta/a/tu/imagen-de-fondo.jpg');
-        background-size: cover;
-        background-position: center;
-    }
-    
+        main {
+            padding: 2rem;
+        
+        }
+        
     .login-container {
             width: 70%;
             max-width: 500px;
@@ -227,35 +225,59 @@
         100% { transform: translateX(0) translateY(0) }
     }
 
-    </style>
 
-<div class="flex flex-col md:flex-row w-full max-w-6xl mx-4 bg-transparent rounded-2xl overflow-hidden">
+
+</style>
+
+<div class="flex flex-col md:flex-row w-full max-w-6xl mx-4 bg-transparent rounded-2xl">
     <div class="hidden md:flex flex-col justify-center items-center w-full md:w-1/2 lg:w-2/5 p-8 lg:p-12
-                bg-gradient-to-br from-indigo-50 via-purple-50 to-gray-50
-                dark:from-indigo-900 dark:via-purple-900 dark:to-gray-900
-                border border-gray-200 dark:border-gray-700
+                border border-gray-200 dark:border-gray-700 rounded-l-lg
                 relative overflow-hidden shadow-lg dark:shadow-xl dark:shadow-purple-900/20
-                transition-all duration-500">
+                transition-all duration-500 overflow-hidden">
         
-    <div class="absolute inset-0">
-        <div class="absolute inset-0 opacity-20 dark:opacity-0
-                   [background-size:40px_40px] 
-                   [background-image:linear-gradient(to_right,#80808008_1px,transparent_1px),
-                                    linear-gradient(to_bottom,#80808008_1px,transparent_1px)]">
+ 
+    <div class="absolute inset-0 overflow-hidden rounded-lg">
+        <div class="absolute inset-0 overflow-hidden 
+                    [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)]
+                    dark:[mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_80%)]">
+            <div class="absolute inset-0 opacity-30 dark:opacity-0 overflow-hidden 
+                        [background-size:32px_32px]
+                        [background-image:linear-gradient(to_right,rgba(99,102,241,0.1)_1px,transparent_1px),
+                                        linear-gradient(to_bottom,rgba(99,102,241,0.1)_1px,transparent_1px)]">
+            </div>
+            
+            <div class="absolute inset-0 opacity-0 dark:opacity-30 overflow-hidden 
+                        [background-size:32px_32px]
+                        [background-image:linear-gradient(to_right,rgba(168,85,247,0.2)_1px,transparent_1px),
+                                        linear-gradient(to_bottom,rgba(168,85,247,0.2)_1px,transparent_1px)]">
+            </div>
         </div>
-        
-        <div class="absolute inset-0 opacity-0 dark:opacity-10
-                   [background-size:40px_40px] 
-                   [background-image:linear-gradient(to_right,#80808020_1px,transparent_1px),
-                                    linear-gradient(to_bottom,#80808020_1px,transparent_1px)]">
+
+        <div class="absolute inset-0 opacity-40 dark:opacity-30 overflow-hidden ">
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full overflow-hidden 
+                        bg-indigo-200/70 dark:bg-indigo-700/60
+                        filter blur-[80px] dark:blur-[100px]
+                        animate-[pulse_6s_ease-in-out_infinite]">
+            </div>
+            
+            <div class="absolute bottom-1/3 right-1/3 w-72 h-72 rounded-full overflow-hidden 
+                        bg-purple-200/60 dark:bg-purple-800/50
+                        filter blur-[90px] dark:blur-[110px]
+                        animate-[pulse_7s_ease-in-out_infinite_2s]">
+            </div>
+            
+            <div class="absolute top-3/4 left-2/3 w-48 h-48 rounded-full overflow-hidden 
+                        bg-blue-100/50 dark:bg-blue-900/40
+                        filter blur-[60px] dark:blur-[80px]
+                        animate-[pulse_5s_ease-in-out_infinite_1s]">
+            </div>
         </div>
-        
-  
-        <div class="absolute inset-0 opacity-30 dark:opacity-20">
-            <div class="absolute top-1/4 left-1/4 w-32 h-32 rounded-full 
-                       bg-indigo-100 dark:bg-indigo-900/80 filter blur-3xl"></div>
-            <div class="absolute bottom-1/3 right-1/3 w-40 h-40 rounded-full 
-                       bg-purple-100 dark:bg-purple-900/80 filter blur-3xl"></div>
+
+        <div class="absolute inset-0">
+            <div class="absolute top-1/3 left-1/4 w-1 h-1 rounded-full bg-indigo-300/80 dark:bg-indigo-600/70
+                        animate-[particle_15s_linear_infinite]"></div>
+            <div class="absolute top-2/5 left-3/4 w-1 h-1 rounded-full bg-purple-300/80 dark:bg-purple-600/70
+                        animate-[particle_12s_linear_infinite_3s]"></div>
         </div>
     </div>
     
@@ -328,13 +350,13 @@
         </div>
     </div>
 
-    <div class="flex-1 flex flex-col justify-center items-center p-8 sm:p-10 md:p-12 bg-white/5 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-800/10 dark:border-white/10 rounded-2xl md:rounded-none md:border-l-0 relative overflow-hidden">
+    <div class="flex-1 flex flex-col justify-center items-center p-8 sm:p-10 md:p-12 bg-white/5 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-800/10 dark:border-white/10 rounded-2xl md:rounded-l-none md-rounded-r-2xl md:border-l-0 relative overflow-hidden">
         <div class="absolute -left-20 -top-20 w-64 h-64 bg-indigo-600/10 rounded-full filter blur-3xl"></div>
         
         <div class="relative z-10 w-full max-w-xs sm:max-w-sm">
             <div class="md:hidden flex justify-center mb-8">
                 <div class="relative group">
-                    <img src="{{ asset('images/logo.png') }}" alt="SOCfusion Logo" class="w-20 h-20 rounded-full shadow-lg border-4 border-indigo-100/30 dark:border-gray-700 object-cover">
+                    <img src="{{ asset('images/logo.png') }}" alt="SOCfusion Logo" class="w-20 h-20 rounded-full shadow-lg border-4 border-indigo-100/30 dark:border-none object-cover">
                     <div class="absolute inset-0 rounded-full border border-indigo-400/30 animate-spin-slow"></div>
                 </div>
             </div>
