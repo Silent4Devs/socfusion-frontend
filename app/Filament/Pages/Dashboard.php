@@ -18,6 +18,7 @@ class Dashboard extends Page
     public $total_logrhythm;
     public $total_prtg;
     public $logrhythm_timeline;
+    public $prtg_timeline;
     public $last_alerts;
     public $logrhythm_percentaje;
     public $high_percentage;
@@ -48,7 +49,8 @@ class Dashboard extends Page
 
     }
 
-    public function fetchData(){
+    public function fetchData()
+    {
         $response = Http::get($this->ia_server . '/dashboard/soc');
 
         $data = $response->json();
@@ -56,6 +58,7 @@ class Dashboard extends Page
         $this->total_logrhythm = $data['total_logrhythm'] ?? 0;
         $this->total_prtg = $data['total_prtg'] ?? 0;
         $this->logrhythm_timeline = $data['logrhythm_timeline'] ?? [];
+        $this->prtg_timeline = $data['prtg_timeline'] ?? [];
 
         $this->prtg_percentage = isset($data['prtg_percentage']) ? round($data['prtg_percentage'], 1) : 0;
         $this->logrhythm_percentaje = isset($data['logrhythm_percentaje']) ? round($data['logrhythm_percentaje'], 1) : 0;
@@ -93,34 +96,7 @@ class Dashboard extends Page
         ->take(5)
         ->get();
         
-        $this->total_clients = Client::count();
-        $response = Http::get($this->ia_server . '/alarms/');
-        $data = $response->json() ?? [];
-        $this->all_alerts = array_slice($data, 0,21);
-        $this->updateVisibleAlerts();
         $this->dispatch('update-chart');
     }
 
-    public function updateVisibleAlerts()
-    {
-        $offset = ($this->current_alert_page - 1) * $this->alerts_per_page;
-        $this->visible_alerts = array_slice($this->all_alerts, $offset, $this->alerts_per_page);
-    }
-
-    public function previousAlerts()
-    {
-        if ($this->current_alert_page > 1) {
-            $this->current_alert_page--;
-            $this->updateVisibleAlerts();
-        }
-    }
-
-    public function nextAlerts()
-    {
-        $max_page = ceil(count($this->all_alerts) / $this->alerts_per_page);
-        if ($this->current_alert_page < $max_page) {
-            $this->current_alert_page++;
-            $this->updateVisibleAlerts();
-        }
-    }
 }
