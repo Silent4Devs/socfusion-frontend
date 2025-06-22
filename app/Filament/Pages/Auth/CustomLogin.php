@@ -10,7 +10,7 @@ class CustomLogin extends BaseLogin
     /**
      * @var view-string
      */
-    protected static string $view = 'filament.pages.customlogin';
+    protected static string $view = 'filament.pages.auth.custom-login';
   
 
 }

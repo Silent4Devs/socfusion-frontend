@@ -26,13 +26,13 @@
     }
     
     .login-container {
-        width: 70%;
-        max-width: 500px;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+            width: 70%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
     }
 
     @media screen and (min-width: 1024px) {
@@ -162,56 +162,104 @@
         50% { border-color: #42bfd8; }
         }
 
-        .glitch-text {
-            position: relative;
-            color: white;
-        }
-        .glitch-layers {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .glitch-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: inherit;
-        }
-        .glitch-layer--1 {
-            color: #0ff;
-            animation: glitch-anim-1 2s infinite linear alternate-reverse;
-            clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%);
-        }
-        .glitch-layer--2 {
-            color: #f0f;
-            animation: glitch-anim-2 2s infinite linear alternate-reverse;
-            clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%);
-        }
-        @keyframes glitch-anim-1 {
-            0% { transform: translateX(0) }
-            20% { transform: translateX(-3px) }
-            40% { transform: translateX(3px) }
-            60% { transform: translateX(-3px) }
-            80% { transform: translateX(3px) }
-            100% { transform: translateX(0) }
-        }
+        
+    .glitch-text {
+        position: relative;
+    }
+
+    .glitch-layers {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .glitch-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        opacity: 0.7;
+    }
+
+    .glitch-layer--1 {
+        animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        clip-path: polygon(0 20%, 100% 20%, 100% 30%, 0 30%);
+    }
+
+    .glitch-layer--2 {
+        animation: glitch-anim-2 2s infinite linear alternate-reverse;
+        clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%);
+    }
+
+    .glitch-layer--3 {
+        animation: glitch-anim-3 2s infinite linear alternate-reverse;
+        clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%);
+    }
+
+    @keyframes glitch-anim-1 {
+        0% { transform: translateX(0) }
+        20% { transform: translateX(-3px) }
+        40% { transform: translateX(3px) }
+        60% { transform: translateX(-3px) }
+        80% { transform: translateX(3px) }
+        100% { transform: translateX(0) }
+    }
+
+    @keyframes glitch-anim-2 {
+        0% { transform: translateX(0) }
+        20% { transform: translateX(4px) }
+        40% { transform: translateX(-4px) }
+        60% { transform: translateX(4px) }
+        80% { transform: translateX(-4px) }
+        100% { transform: translateX(0) }
+    }
+
+    @keyframes glitch-anim-3 {
+        0% { transform: translateX(0) translateY(0) }
+        20% { transform: translateX(2px) translateY(-2px) }
+        40% { transform: translateX(-2px) translateY(2px) }
+        60% { transform: translateX(2px) translateY(2px) }
+        80% { transform: translateX(-2px) translateY(-2px) }
+        100% { transform: translateX(0) translateY(0) }
+    }
 
     </style>
 
 <div class="flex flex-col md:flex-row w-full max-w-6xl mx-4 bg-transparent rounded-2xl overflow-hidden">
-    <div class="hidden md:flex flex-col justify-center items-center w-full md:w-1/2 lg:w-2/5 p-8 lg:p-12 bg-gradient-to-br from-indigo-900 via-purple-900 to-gray-900 dark:from-gray-900 dark:via-indigo-900 dark:to-black relative overflow-hidden">
-        <div class="absolute inset-0 opacity-20">
-            <div class="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-blue-500 filter blur-3xl opacity-70 animate-pulse"></div>
-            <div class="absolute bottom-1/3 right-1/3 w-40 h-40 rounded-full bg-purple-600 filter blur-3xl opacity-50 animate-pulse delay-300"></div>
+    <div class="hidden md:flex flex-col justify-center items-center w-full md:w-1/2 lg:w-2/5 p-8 lg:p-12
+                bg-gradient-to-br from-indigo-50 via-purple-50 to-gray-50
+                dark:from-indigo-900 dark:via-purple-900 dark:to-gray-900
+                border border-gray-200 dark:border-gray-700
+                relative overflow-hidden shadow-lg dark:shadow-xl dark:shadow-purple-900/20
+                transition-all duration-500">
+        
+    <div class="absolute inset-0">
+        <div class="absolute inset-0 opacity-20 dark:opacity-0
+                   [background-size:40px_40px] 
+                   [background-image:linear-gradient(to_right,#80808008_1px,transparent_1px),
+                                    linear-gradient(to_bottom,#80808008_1px,transparent_1px)]">
         </div>
         
-
-        <div class="absolute inset-0 opacity-10 bg-[size:40px_40px] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)]"></div>
+        <div class="absolute inset-0 opacity-0 dark:opacity-10
+                   [background-size:40px_40px] 
+                   [background-image:linear-gradient(to_right,#80808020_1px,transparent_1px),
+                                    linear-gradient(to_bottom,#80808020_1px,transparent_1px)]">
+        </div>
         
+  
+        <div class="absolute inset-0 opacity-30 dark:opacity-20">
+            <div class="absolute top-1/4 left-1/4 w-32 h-32 rounded-full 
+                       bg-indigo-100 dark:bg-indigo-900/80 filter blur-3xl"></div>
+            <div class="absolute bottom-1/3 right-1/3 w-40 h-40 rounded-full 
+                       bg-purple-100 dark:bg-purple-900/80 filter blur-3xl"></div>
+        </div>
+    </div>
+    
+                
         <div class="relative z-10 flex flex-col items-center text-center">
         
             <div class="relative mb-8 group" style="perspective: 1000px;">
@@ -249,7 +297,7 @@
             </div>
             
         
-            <h2 class="glitch-text text-2xl font-bold mb-3 tracking-wider" data-text="BIENVENIDO A">
+            <h2 class="glitch-text text-2xl font-bold mb-3 tracking-wider dark:text-white text-gray-900">
                 <span class="glitch-layers">
                     <span class="glitch-layer glitch-layer--1">BIENVENIDO A</span>
                     <span class="glitch-layer glitch-layer--2">BIENVENIDO A</span>
@@ -272,7 +320,7 @@
                 </span>
 
                 
-            <div class="text-sm text-white/80 max-w-xs mt-6 font-mono tracking-wide relative overflow-hidden typewriter">
+            <div class="text-sm text-dark/80 dark:text-white/80 max-w-xs mt-6 font-mono tracking-wide relative overflow-hidden typewriter">
                 <h4 class="inline-block whitespace-nowrap">
                     Security Operations Center
                 </h4>
@@ -291,7 +339,7 @@
                 </div>
             </div>
 
-            <h3 class="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-500 mb-6 text-center tracking-tight">
+           <h3 class="text-xl sm:text-2xl font-bold text-dark/80 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-blue-500 mb-6 text-center tracking-tight">
                 INGRESO DE USUARIO
             </h3>
 
