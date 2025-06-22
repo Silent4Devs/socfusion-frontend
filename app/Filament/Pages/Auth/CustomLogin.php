@@ -1,5 +1,6 @@
 <?php
-Namespace App\Filament\Pages\Auth;
+
+namespace App\Filament\Pages\Auth;
 
 use Filament\Pages\Auth\Login as BaseLogin;
 use Illuminate\Support\Facades\Log;
