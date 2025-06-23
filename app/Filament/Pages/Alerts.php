@@ -10,6 +10,9 @@ use App\Jobs\CreateReport;
 use Illuminate\Support\Facades\Redis;
 use Livewire\WithFileUploads;
 use App\Jobs\CreateTicket;
+use Livewire\WithPagination;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class Alerts extends Page
 {
@@ -19,6 +22,7 @@ class Alerts extends Page
     protected static string $view = 'filament.pages.alerts';
 
     use WithFileUploads;
+    use WithPagination;
 
     public $alarmId;
     public $comments;
@@ -28,13 +32,23 @@ class Alerts extends Page
     public $filteredAlarms = [];
     public $iaServer;
     public $assignees;
+
+    public $page = 1;
+    public $perPage = 20; 
     
+    public $classification;
+    public $client;
+    public $alarmType;
+
+    public $clients;
+    public $visibleAlerts;
+
     public function mount()
     {
         $this->iaServer = config('services.ia_server');
+
         $response = Http::get($this->iaServer  . '/tickets/');
         $data = $response->json();
-
 
         if ($response->successful()) {
             
@@ -47,35 +61,101 @@ class Alerts extends Page
         if ($response->successful()) {
             $alarms = $response->json();
 
-            $alarms = collect($alarms)->map(function ($alarm) {
-                if (isset($alarm['message_raw']) && !is_null($alarm['message_raw'])) {
-                    $alarm['message_raw'] = $alarm['message_raw'] . ' - PRTG';
-                }
-                return $alarm;
-            })->toArray();
-
             $this->alarms = $alarms;
             $this->filteredAlarms = $alarms;
         } 
+
+
+        $response = Http::get($this->iaServer . '/alarms/clients');
+        if ($response->successful()) {
+            $clients = $response->json();
+
+            $this->clients = $clients;
+            
+        } 
+        
+        $this->getVisibleAlerts();
+
     }
 
-    #[On('update_Alarms')] 
-    public function update_Alarms($data = null)
+    public function nextPage()
+    {
+        $maxPage = ceil(count($this->filteredAlarms) / $this->perPage);
+        if ($this->page < $maxPage) {
+            $this->page++;
+        }
+
+        $this->getVisibleAlerts();
+    }
+
+    public function previousPage()
+    {
+        if ($this->page > 1) {
+            $this->page--;
+        }
+
+        $this->getVisibleAlerts();
+    }
+
+    public function resetPage()
+    {
+        $this->page = 1;
+        $this->getVisibleAlerts();
+    }
+
+    public function getVisibleAlerts()
+    {
+        $offset = ($this->page - 1) * $this->perPage;
+        $this->visibleAlerts = array_slice($this->filteredAlarms, $offset, $this->perPage);
+    }
+
+    public function update_Alarms()
     {   
         $response = Http::get($this->iaServer . '/alarms');
         if ($response->successful()) {
             $alarms = $response->json();
 
-            $alarms = collect($alarms)->map(function ($alarm) {
-                if (isset($alarm['message_raw']) && !is_null($alarm['message_raw'])) {
-                    $alarm['message_raw'] = $alarm['message_raw'] . ' - PRTG';
+            $oldAlarms = $this->alarms;
+
+            $referenceDate = $oldAlarms[0]['created_at'] ?? $oldAlarms[0]['date_inserted'] ?? null;
+
+            $alarms = $response->json();
+
+            $foundIndex = null;
+            if ($referenceDate) {
+                foreach ($alarms as $index => $alarm) {
+                    $date = $alarm['created_at'] ?? $alarm['date_inserted'] ?? null;
+                    if ($date === $referenceDate) {
+                        $foundIndex = $index;
+                        break;
+                    }
                 }
-                return $alarm;
-            })->toArray();
+            }
 
             $this->alarms = $alarms;
-            $this->filteredAlarms = $alarms;
+            $this->filteredAlarms = $this->filterAlarms();
+
+            if (!is_null($foundIndex) && $foundIndex > 0) {
+                if ($foundIndex === 1){
+   
+                    $this->dispatch('new-report', message: "1 nueva alarma");
+                    
+                }else{
+                    
+                    $this->dispatch('new-report', message: "$foundIndex nuevas alarmas");
+                
+                }
+            }
         } 
+
+        $this->getVisibleAlerts();
+
+
+    }
+
+    public function updatedClassification($value)
+    {
+        $this->filteredAlarms = $this->filterAlarms();
     }
 
     public function updatedSearch($value)
@@ -83,26 +163,43 @@ class Alerts extends Page
         $this->filteredAlarms = $this->filterAlarms();
     }
 
+    public function updatedAlarmType($value)
+    {
+        $this->filteredAlarms = $this->filterAlarms();
+    }
+
+
     public function filterAlarms()
     {
-        if (empty($this->search)) {
-            return $this->alarms;
+        $alarms = $this->alarms;
+
+        if (!empty($this->alarmType)) {
+            $alarms = array_filter($alarms, function ($alarm) {
+                return isset($alarm['alarm_type']) && $alarm['alarm_type'] == $this->alarmType;
+            });
         }
 
-        $searchTerm = strtolower($this->search);
+        if (!empty($this->search)) {
+            $searchTerm = strtolower($this->search);
 
-        return array_filter($this->alarms, function ($alarm) use ($searchTerm) {
-            return (
-                (isset($alarm['alarm_rule_name']) && 
-                str_contains(strtolower($alarm['alarm_rule_name']), $searchTerm)) ||
-                
-                (isset($alarm['message']) && 
-                str_contains(strtolower($alarm['message']), $searchTerm)) ||
-                
-                (isset($alarm['impacted_entity']) && 
-                str_contains(strtolower($alarm['impacted_entity']), $searchTerm))
-            );
-        });
+            $alarms = array_filter($alarms, function ($alarm) use ($searchTerm) {
+                return (
+                    (isset($alarm['alarm_rule_name']) && str_contains(strtolower($alarm['alarm_rule_name']), $searchTerm)) ||
+                    (isset($alarm['message']) && str_contains(strtolower($alarm['message']), $searchTerm)) ||
+                    (isset($alarm['impacted_entity']) && str_contains(strtolower($alarm['impacted_entity']), $searchTerm))
+                );
+            });
+        }
+
+        if (!empty($this->classification)){
+            $alarms = array_filter($alarms, function ($alarm) {
+                return isset($alarm['model_classification']) && $alarm['model_classification'] == $this->classification;
+            });
+        }
+        
+        $this->resetPage();
+        
+        return $alarms;
     }
 
     public function generateReport($alarmId, $alarmType, $title, $comments, $create_ticket, $comments_ticket, $assign_ticket)
