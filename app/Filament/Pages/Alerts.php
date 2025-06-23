@@ -116,13 +116,11 @@ class Alerts extends Page
         if ($response->successful()) {
             $newAlarms = $response->json();
 
-            // Si no tienes alarmas cargadas, pon todas
             if (empty($this->alarms)) {
                 $this->alarms = $newAlarms;
             } else {
                 $latestDate = $this->alarms[0]['created_at'] ?? $this->alarms[0]['date_inserted'] ?? null;
 
-                // Encuentra dónde está la última alarma que ya tienes
                 $appendIndex = null;
                 foreach ($newAlarms as $i => $alarm) {
                     $date = $alarm['created_at'] ?? $alarm['date_inserted'] ?? null;
@@ -133,14 +131,11 @@ class Alerts extends Page
                 }
 
                 if ($appendIndex === null) {
-                    // No se encontró, probablemente todas son nuevas o hubo reinicio
                     $this->alarms = array_merge($newAlarms, $this->alarms);
                 } elseif ($appendIndex > 0) {
-                    // Hay nuevas alarmas, agregarlas antes de las que ya tienes
                     $onlyNew = array_slice($newAlarms, 0, $appendIndex);
                     $this->alarms = array_merge($onlyNew, $this->alarms);
                 }
-                // Si appendIndex es 0, no hay alarmas nuevas, no cambies nada
             }
 
             $this->filterAlarms();

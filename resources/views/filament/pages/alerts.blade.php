@@ -120,7 +120,23 @@
         </div>
  
 
-        <div class="flex gap-4" wire:poll.20s="update_Alarms">
+        <div class="flex gap-4"     
+                x-data="{
+                    interval: null,
+                    startPolling() {
+                        if (this.interval) clearInterval(this.interval);
+                        this.interval = setInterval(() => {
+                            if (!this.openReportModal) {
+                                $wire.update_Alarms();
+                            }
+                        }, 5000); 
+                    },
+                    stopPolling() {
+                        if (this.interval) clearInterval(this.interval);
+                    }
+                }"
+                x-init="startPolling()"
+            >
 
            @php
                 $alarmsLeft = [];
@@ -860,15 +876,15 @@
                 </button>
             </div>
 
-    <div x-show="openReportModal" 
+        <div x-show="openReportModal" 
         x-transition.opacity
         class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-        <div @click="openReportModal = false" 
-             class="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
-        
-        <div class="relative w-full max-w-md rounded-xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-white/20 dark:border-gray-600/30 shadow-2xl overflow-hidden">
-            <div class="h-1 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+            <div @click="openReportModal = false" 
+                class="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
             
+            <div class="relative w-full max-w-md rounded-xl bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-white/20 dark:border-gray-600/30 shadow-2xl overflow-hidden">
+                <div class="h-1 bg-gradient-to-r from-blue-500 to-cyan-400"></div>
+                
             <div class="p-6 space-y-6">
                 <h3 class="text-xl font-light tracking-wide text-gray-800 dark:text-white/90">
                     <span class="font-medium">Nuevo</span> Reporte 
@@ -877,9 +893,9 @@
                 <div class="space-y-3">
                     <div class="group relative">
                         <input x-model="comments" 
-                               type="text" 
-                               class="w-full bg-transparent border-0 border-b border-gray-300 dark:border-gray-500 focus:border-blue-500 focus:ring-0 px-0 py-2 text-gray-800 dark:text-white/90 placeholder-transparent peer"
-                               placeholder=" " />
+                            type="text" 
+                            class="w-full bg-transparent border-0 border-b border-gray-300 dark:border-gray-500 focus:border-blue-500 focus:ring-0 px-0 py-2 text-gray-800 dark:text-white/90 placeholder-transparent peer"
+                            placeholder=" " />
                         <label 
                             class="pointer-events-none absolute left-0 -top-3.5 text-gray-500 dark:text-gray-400 text-sm transition-all 
                                 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 
