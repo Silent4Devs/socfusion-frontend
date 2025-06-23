@@ -139,11 +139,11 @@ class Alerts extends Page
             if (!is_null($foundIndex) && $foundIndex > 0) {
                 if ($foundIndex === 1){
    
-                    $this->dispatch('new-report', message: "1 nueva alarma");
+                    $this->dispatch('new-report', message: "1 nueva alerta");
                     
                 }else{
                     
-                    $this->dispatch('new-report', message: "$foundIndex nuevas alarmas");
+                    $this->dispatch('new-report', message: "$foundIndex nuevas alertas");
                 
                 }
             }
