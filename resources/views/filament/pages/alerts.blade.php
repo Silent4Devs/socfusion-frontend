@@ -21,7 +21,7 @@
                     const data = await response.json();
                 } else {
                     const errorData = await response.json();
-                }
+                }x
             } catch (error) {
                 alert('Error de red al intentar clasificar la alarma.');
                 console.error('Network error:', error);
@@ -33,7 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <div class="space-y-4" wire:poll.5s="update_Alarms">
+    <div class="space-y-4" wire:poll.15s="update_Alarms">
 
         <div>
             <div class="flex flex-col md:flex-row gap-4 mb-6">
