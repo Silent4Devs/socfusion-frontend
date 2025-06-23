@@ -21,7 +21,7 @@
                     const data = await response.json();
                 } else {
                     const errorData = await response.json();
-                }x
+                }
             } catch (error) {
                 alert('Error de red al intentar clasificar la alarma.');
                 console.error('Network error:', error);
@@ -33,7 +33,7 @@
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <div class="space-y-4" wire:poll.15s="update_Alarms">
+    <div class="space-y-4" wire:poll.20s="update_Alarms">
 
         <div>
             <div class="flex flex-col md:flex-row gap-4 mb-6">
@@ -138,7 +138,7 @@
             <div class="flex flex-col gap-4 md:w-1/2">
                 @foreach ($alarmsLeft as $alarm)
 
-                <div x-data="{ showDetails: false }" class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5 space-y-3 border border-gray-100 dark:border-gray-700 transition-all duration-300 ">
+                <div x-data="{ showDetails: false }" wire:key="alarm-{{ $alarm['alarm_type'] }}-{{ $alarm['id'] }}" class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5 space-y-3 border border-gray-100 dark:border-gray-700 transition-all duration-300 ">
                     <div class="flex items-start justify-between">
                     <div>
                     @if ($alarm['alarm_type'] == 'logrhythm')
@@ -482,7 +482,7 @@
             <div class="flex flex-col gap-4 md:w-1/2">
                 @foreach ($alarmsRight as $alarm)
 
-                <div x-data="{ showDetails: false }" class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5 space-y-3 border border-gray-100 dark:border-gray-700 transition-all duration-300 ">
+                <div x-data="{ showDetails: false }" wire:key="alarm-{{ $alarm['alarm_type'] }}-{{ $alarm['id'] }}" class="bg-white dark:bg-gray-800 shadow-sm rounded-xl p-5 space-y-3 border border-gray-100 dark:border-gray-700 transition-all duration-300 ">
                     <div class="flex items-start justify-between">
                     <div>
                     @if ($alarm['alarm_type'] == 'logrhythm')
