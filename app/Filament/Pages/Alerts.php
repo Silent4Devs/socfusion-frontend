@@ -31,14 +31,14 @@ class Alerts extends Page
     public $search = "";
     public $filteredAlarms = [];
     public $iaServer;
-    public $assignees;
+    public $assignees = [];
 
     public $page = 1;
     public $perPage = 20; 
     
-    public $classification;
-    public $client;
-    public $alarmType;
+    public $classification = '';
+    public $client = '';
+    public $alarmType = '';
 
     public $clients;
     public $visibleAlerts;
@@ -106,6 +106,7 @@ class Alerts extends Page
     public function getVisibleAlerts()
     {
         $offset = ($this->page - 1) * $this->perPage;
+        
         $this->visibleAlerts = array_slice($this->filteredAlarms, $offset, $this->perPage);
     }
 
@@ -133,7 +134,7 @@ class Alerts extends Page
             }
 
             $this->alarms = $alarms;
-            $this->filteredAlarms = $this->filterAlarms();
+            $this->filterAlarms();
 
             if (!is_null($foundIndex) && $foundIndex > 0) {
                 if ($foundIndex === 1){
@@ -155,22 +156,25 @@ class Alerts extends Page
 
     public function updatedClassification($value)
     {
-        $this->filteredAlarms = $this->filterAlarms();
+        $this->filterAlarms();
     }
 
     public function updatedSearch($value)
     {
-        $this->filteredAlarms = $this->filterAlarms();
+        $this->filterAlarms();
     }
 
     public function updatedAlarmType($value)
     {
-        $this->filteredAlarms = $this->filterAlarms();
+        $this->filterAlarms();
     }
 
 
     public function filterAlarms()
     {
+        
+        $start = microtime(true);
+
         $alarms = $this->alarms;
 
         if (!empty($this->alarmType)) {
@@ -178,7 +182,6 @@ class Alerts extends Page
                 return isset($alarm['alarm_type']) && $alarm['alarm_type'] == $this->alarmType;
             });
         }
-
         if (!empty($this->search)) {
             $searchTerm = strtolower($this->search);
 
@@ -197,9 +200,11 @@ class Alerts extends Page
             });
         }
         
+        $this->filteredAlarms = $alarms;
         $this->resetPage();
-        
-        return $alarms;
+        $end = microtime(true);
+        \Log::info('Time spend in function: ' . ($end - $start));
+
     }
 
     public function generateReport($alarmId, $alarmType, $title, $comments, $create_ticket, $comments_ticket, $assign_ticket)
