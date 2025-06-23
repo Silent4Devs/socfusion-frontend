@@ -114,43 +114,43 @@ class Alerts extends Page
     {   
         $response = Http::get($this->iaServer . '/alarms');
         if ($response->successful()) {
-            $alarms = $response->json();
+            $newAlarms = $response->json();
 
-            $oldAlarms = $this->alarms;
+            // Si no tienes alarmas cargadas, pon todas
+            if (empty($this->alarms)) {
+                $this->alarms = $newAlarms;
+            } else {
+                $latestDate = $this->alarms[0]['created_at'] ?? $this->alarms[0]['date_inserted'] ?? null;
 
-            $referenceDate = $oldAlarms[0]['created_at'] ?? $oldAlarms[0]['date_inserted'] ?? null;
-
-            $alarms = $response->json();
-
-            $foundIndex = null;
-            if ($referenceDate) {
-                foreach ($alarms as $index => $alarm) {
+                // Encuentra dónde está la última alarma que ya tienes
+                $appendIndex = null;
+                foreach ($newAlarms as $i => $alarm) {
                     $date = $alarm['created_at'] ?? $alarm['date_inserted'] ?? null;
-                    if ($date === $referenceDate) {
-                        $foundIndex = $index;
+                    if ($date === $latestDate) {
+                        $appendIndex = $i;
                         break;
                     }
                 }
+
+                if ($appendIndex === null) {
+                    // No se encontró, probablemente todas son nuevas o hubo reinicio
+                    $this->alarms = array_merge($newAlarms, $this->alarms);
+                } elseif ($appendIndex > 0) {
+                    // Hay nuevas alarmas, agregarlas antes de las que ya tienes
+                    $onlyNew = array_slice($newAlarms, 0, $appendIndex);
+                    $this->alarms = array_merge($onlyNew, $this->alarms);
+                }
+                // Si appendIndex es 0, no hay alarmas nuevas, no cambies nada
             }
 
-            $this->alarms = $alarms;
             $this->filterAlarms();
 
-            if (!is_null($foundIndex) && $foundIndex > 0) {
-                if ($foundIndex === 1){
-   
-                    $this->dispatch('new-report', message: "1 nueva alerta");
-                    
-                }else{
-                    
-                    $this->dispatch('new-report', message: "$foundIndex nuevas alertas");
-                
-                }
+            if (isset($onlyNew) && count($onlyNew) > 0) {
+                $count = count($onlyNew);
+                $this->dispatch('new-report', message: "$count nueva" . ($count > 1 ? 's alertas' : ' alerta'));
             }
-        } 
-
+        }
         $this->getVisibleAlerts();
-
 
     }
 
