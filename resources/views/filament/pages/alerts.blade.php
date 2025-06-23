@@ -129,7 +129,7 @@
                             if (!this.openReportModal) {
                                 $wire.update_Alarms();
                             }
-                        }, 5000); 
+                        }, 20000); 
                     },
                     stopPolling() {
                         if (this.interval) clearInterval(this.interval);
