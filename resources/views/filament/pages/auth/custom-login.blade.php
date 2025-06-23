@@ -329,7 +329,7 @@
             </h2>
 
                 
-                <span class="text-4xl font-extrabold text-transparent bg-clip-text 
+                <span class="text-4xl font-extrabold bg-clip-text text-indigo-600  
                             bg-gradient-to-r from-indigo-400 via-blue-400 to-teal-400 
                             tracking-wider mb-6 relative">
                     <span class="relative block hover:animate-[glitch_0.5s_linear_infinite]">
