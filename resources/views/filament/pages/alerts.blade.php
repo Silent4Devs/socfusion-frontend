@@ -33,7 +33,49 @@
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <div class="space-y-4" wire:poll.30s="update_Alarms">
+    <div class="space-y-4" x-data="{ openReportModal: false,  
+            createTicket: false,
+            commentsTicket: '',
+            assingTicket: null,
+            comments: '',
+            evidence: null,
+            alarmId: null,
+            alarmType: null,
+            alarmMessage: null,
+            previewEvidence: null,
+            handleFileUpload(event) {
+                const file = event.target.files[0];
+                this.evidence = file;
+                if (file && file.type.startsWith('image/')) {
+                    this.previewEvidence = URL.createObjectURL(file);
+                } else {
+                    this.previewEvidence = null;
+                }
+            },
+            confirmReport(id, type, message) {
+                this.alarmId = id;
+                this.alarmType = type;
+                this.alarmMessage = message;
+                this.openReportModal = true;
+            },
+
+            submitReport() {
+                $wire.generateReport(this.alarmId, this.alarmType, this.alarmMessage, this.comments, this.createTicket, this.commentsTicket, this.assingTicket);
+
+                this.resetForm();
+                this.openReportModal = false;
+            },
+
+            resetForm() {
+                this.comments = '';
+                this.evidence = null;
+                this.previewEvidence = null;
+                this.alarmId = null;
+                this.alarmType = '';
+                this.alarmMessage = '';
+            }
+                
+            }">
 
         <div>
             <div class="flex flex-col md:flex-row gap-4 mb-6">
@@ -76,7 +118,11 @@
                 </div>
             </div>
         </div>
-            @php
+ 
+
+        <div class="flex gap-4" wire:poll.20s="update_Alarms">
+
+           @php
                 $alarmsLeft = [];
                 $alarmsRight = [];
 
@@ -88,52 +134,6 @@
                     }
                 }
             @endphp
-
-        <div class="flex gap-4" 
-        x-data="{ openReportModal: false,  
-            createTicket: false,
-            commentsTicket: '',
-            assingTicket: null,
-            comments: '',
-            evidence: null,
-            alarmId: null,
-            alarmType: null,
-            alarmMessage: null,
-            previewEvidence: null,
-            handleFileUpload(event) {
-                const file = event.target.files[0];
-                this.evidence = file;
-                if (file && file.type.startsWith('image/')) {
-                    this.previewEvidence = URL.createObjectURL(file);
-                } else {
-                    this.previewEvidence = null;
-                }
-            },
-            confirmReport(id, type, message) {
-                this.alarmId = id;
-                this.alarmType = type;
-                this.alarmMessage = message;
-                this.openReportModal = true;
-            },
-
-            submitReport() {
-                $wire.generateReport(this.alarmId, this.alarmType, this.alarmMessage, this.comments, this.createTicket, this.commentsTicket, this.assingTicket);
-
-                this.resetForm();
-                this.openReportModal = false;
-            },
-
-            resetForm() {
-                this.comments = '';
-                this.evidence = null;
-                this.previewEvidence = null;
-                this.alarmId = null;
-                this.alarmType = '';
-                this.alarmMessage = '';
-            }
-                
-            }"
-        >
 
             <div class="flex flex-col gap-4 md:w-1/2">
                 @foreach ($alarmsLeft as $alarm)
@@ -830,9 +830,37 @@
             </div>
 
 
-       
+        </div>
+
+            <div class="flex items-center justify-center gap-2 my-6">
+                <button
+                    wire:click="previousPage"
+                    @disabled($page <= 1)
+                    class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-30 disabled:pointer-events-none"
+                    {{ $page <= 1 ? 'disabled' : '' }}
+                    aria-label="Página anterior"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <span class="text-sm font-mono text-gray-500 dark:text-gray-300 select-none">
+                    {{ $page }}
+                </span>
+                <button
+                    wire:click="nextPage"
+                    @disabled($page >= ceil(count($filteredAlarms) / $perPage))
+                    class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-30 disabled:pointer-events-none"
+                    {{ $page >= ceil(count($filteredAlarms) / $perPage) ? 'disabled' : '' }}
+                    aria-label="Página siguiente"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+
     <div x-show="openReportModal" 
-    
         x-transition.opacity
         class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
         <div @click="openReportModal = false" 
@@ -932,53 +960,21 @@
                 </div>
             </div>
                         
-            <div class="px-6 py-4 bg-gray-50/50 dark:bg-gray-700/50 flex justify-end space-x-3">
-                <button 
-                    @click="openReportModal = false; resetForm(); createTicket = false" 
-                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors">
-                    Cancelar
-                </button>
+                <div class="px-6 py-4 bg-gray-50/50 dark:bg-gray-700/50 flex justify-end space-x-3">
+                    <button 
+                        @click="openReportModal = false; resetForm(); createTicket = false" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white transition-colors">
+                        Cancelar
+                    </button>
 
-                <button 
-                    @click="submitReport(); openReportModal = false" 
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-                    Enviar Reporte
-                </button>
+                    <button 
+                        @click="submitReport(); openReportModal = false" 
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md transition-colors shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        Enviar Reporte
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
-
-
-        </div>
-
-            <div class="flex items-center justify-center gap-2 my-6">
-                <button
-                    wire:click="previousPage"
-                    @disabled($page <= 1)
-                    class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-30 disabled:pointer-events-none"
-                    {{ $page <= 1 ? 'disabled' : '' }}
-                    aria-label="Página anterior"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <span class="text-sm font-mono text-gray-500 dark:text-gray-300 select-none">
-                    {{ $page }}
-                </span>
-                <button
-                    wire:click="nextPage"
-                    @disabled($page >= ceil(count($filteredAlarms) / $perPage))
-                    class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition disabled:opacity-30 disabled:pointer-events-none"
-                    {{ $page >= ceil(count($filteredAlarms) / $perPage) ? 'disabled' : '' }}
-                    aria-label="Página siguiente"
-                >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
-
 
     </div>
 
