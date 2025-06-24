@@ -198,31 +198,37 @@
         clip-path: polygon(0 40%, 100% 40%, 100% 50%, 0 50%);
     }
 
-    @keyframes glitch-anim-1 {
-        0% { transform: translateX(0) }
-        20% { transform: translateX(-3px) }
-        40% { transform: translateX(3px) }
-        60% { transform: translateX(-3px) }
-        80% { transform: translateX(3px) }
-        100% { transform: translateX(0) }
-    }
+    @media (prefers-color-scheme: dark) {
+        .neon-text {
+            font-size: 2rem;
+            color: #fff;
+            text-shadow:
+            0 0 2px  #0066ff,
+            0 0 5px #0066ff,
+            0 0 10px #0066ff,
+            0 0 15px #0099ff,
+            0 0 30px #00ccff;
+            animation: glow-blue 1.5s infinite alternate;
+        }
 
-    @keyframes glitch-anim-2 {
-        0% { transform: translateX(0) }
-        20% { transform: translateX(4px) }
-        40% { transform: translateX(-4px) }
-        60% { transform: translateX(4px) }
-        80% { transform: translateX(-4px) }
-        100% { transform: translateX(0) }
-    }
-
-    @keyframes glitch-anim-3 {
-        0% { transform: translateX(0) translateY(0) }
-        20% { transform: translateX(2px) translateY(-2px) }
-        40% { transform: translateX(-2px) translateY(2px) }
-        60% { transform: translateX(2px) translateY(2px) }
-        80% { transform: translateX(-2px) translateY(-2px) }
-        100% { transform: translateX(0) translateY(0) }
+        @keyframes glow-blue {
+            0% {
+            text-shadow:
+                0 0 2px  #0044cc,
+                0 0 5px #0044cc,
+                0 0 10px #0044cc,
+                0 0 15px #0077ff,
+                0 0 30px #00aaff;
+            }
+            100% {
+            text-shadow:
+                0 0 5px  #0077ff,
+                0 0 15px  #0077ff,
+                0 0 20px  #00aaff,
+                0 0 30px #00d4ff,
+                0 0 35px #00d4ff;
+            }
+        }
     }
 
 
@@ -289,7 +295,7 @@
                             blur-xl opacity-0 transition-opacity duration-500"></div>
                 
                 <div class="relative w-28 h-28 rounded-full transition-all duration-700 group-hover:rotate-y-180">
-                    <img src="{{ asset('images/logo.png') }}" alt="SOCfusion Logo" 
+                    <img src="{{ asset('images/logo_socfusion.png') }}" alt="SOCfusion Logo" 
                         class="absolute w-full h-full rounded-full shadow-2xl border-4 border-white/30 dark:border-gray-800/80 
                                 object-cover transition-all duration-500 
                                 backdrop-blur-sm bg-white/10 p-1">
@@ -319,14 +325,9 @@
             </div>
             
         
-            <h2 class="glitch-text text-2xl font-bold mb-3 tracking-wider dark:text-white text-gray-900">
-                <span class="glitch-layers">
-                    <span class="glitch-layer glitch-layer--1">BIENVENIDO A</span>
-                    <span class="glitch-layer glitch-layer--2">BIENVENIDO A</span>
-                    <span class="glitch-layer glitch-layer--3">BIENVENIDO A</span>
-                </span>
-                BIENVENIDO A
-            </h2>
+                <div class="neon-container">
+                    <h2 class="neon-text text-dark dark:text-white">Bienvenido A</h2>
+                </div>
 
                 
                 <span class="text-4xl font-extrabold bg-clip-text text-indigo-600  
@@ -356,7 +357,7 @@
         <div class="relative z-10 w-full max-w-xs sm:max-w-sm">
             <div class="md:hidden flex justify-center mb-8">
                 <div class="relative group">
-                    <img src="{{ asset('images/logo.png') }}" alt="SOCfusion Logo" class="w-20 h-20 rounded-full shadow-lg border-4 border-indigo-100/30 dark:border-none object-cover">
+                    <img src="{{ asset('images/logo_socfusion.png') }}" alt="SOCfusion Logo" class="w-20 h-20 rounded-full shadow-lg border-4 border-indigo-100/30 dark:border-none object-cover">
                     <div class="absolute inset-0 rounded-full border border-indigo-400/30 animate-spin-slow"></div>
                 </div>
             </div>
