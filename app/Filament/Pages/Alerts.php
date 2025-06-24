@@ -234,7 +234,7 @@ class Alerts extends Page
         );
 
         $this->dispatch('new-report', message: 'El reporte se está generando');
-
+        $this->evidence = null;
         return response()->json(['message' => 'Your file is being processed.'], 200);
     }
 
