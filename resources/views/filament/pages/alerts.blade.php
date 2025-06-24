@@ -153,7 +153,7 @@
                         <option value="Low">Low</option>    
                     </select>
 
-                    <select 
+                    <!-- <select 
                         class="p-2 border rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
                         wire:model.live="client"
                     >
@@ -161,7 +161,7 @@
                         <option value="client1">Cliente 1</option>
                         <option value="client2">Cliente 2</option>
                         <option value="client3">Cliente 3</option>
-                    </select>            
+                    </select>             -->
                 </div>
             </div>
         </div>
