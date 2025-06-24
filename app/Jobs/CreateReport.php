@@ -86,7 +86,7 @@ class CreateReport implements ShouldQueue
 
 
                 if ($response->successful()) {
-                    $suggestion = $response->json()['response'] ?? 'No se obtuvo respuesta.';
+                    $suggestion = $response->json()['response'] ?? '';
                     Log::info("Sugerencia de acción: $suggestion");
                 } else {
                     Log::error("Error al generar la respuesta IA: " . $response->body());
@@ -111,6 +111,7 @@ class CreateReport implements ShouldQueue
                     'page-size' => 'A4',
                     'orientation' => 'Portrait',
                     'encoding' => 'UTF-8',
+                    'zoom' => 1.2,
                     'enable-local-file-access', 
                 ]);
        

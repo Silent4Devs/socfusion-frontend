@@ -21,9 +21,9 @@
             padding: 0px;
             margin: 0;
             font-size: 14px;
-            width: 210mm;
+            width: 222mm;
             height: auto; 
-            min-height: 297mm;
+            min-height: 327mm;
             box-sizing: border-box;
             display: flex; 
             flex-direction: column;
@@ -158,6 +158,8 @@
             margin-top: auto;
             margin-bottom: 10px;
             width: 100%;
+            position: absolute;
+            bottom: 0;
         }
         
         .section-full{
@@ -289,7 +291,7 @@
                 @isset($alarm['message_raw'])
                     @if (!empty($alarm['message_raw']))
                         <div style="margin-bottom: 10px;">
-                            <span style="display: block; font-weight: bold; font-size: 13px;">Mensaje crudo</span>
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Mensaje</span>
                             <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['message_raw'] }}</div>
                         </div>
                     @endif
