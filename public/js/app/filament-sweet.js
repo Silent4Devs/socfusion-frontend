@@ -87,7 +87,6 @@ window.showModalConfirm = function (
   const dark = isDarkMode();
   const defaultIcon = options.icon || 'question';
   
-  // Configuración de colores para ambos modos
   const colorScheme = {
     light: {
       background: '#ffffff',
@@ -118,7 +117,7 @@ window.showModalConfirm = function (
     cancelButtonColor: colors.cancelButton,
     background: colors.background,
     color: colors.text,
-      customClass: {
+    customClass: {
       popup: `rounded-xl shadow-2xl border ${dark ? 'border-gray-700' : 'border-gray-200'}`,
       confirmButton: `px-5 py-2.5 font-medium text-sm rounded-lg transition-all hover:scale-[1.02] ${dark ? 'hover:shadow-indigo-500/20' : 'hover:shadow-indigo-200'} hover:shadow-lg`,
       cancelButton: `px-5 py-2.5 font-medium text-sm rounded-lg transition-all hover:scale-[1.02] ${dark ? 'hover:shadow-rose-500/20' : 'hover:shadow-rose-200'} hover:shadow-lg`,
@@ -132,5 +131,19 @@ window.showModalConfirm = function (
       popup: 'animate__animated animate__fadeOut animate__faster'
     },
     ...options
+  });
+};
+
+window.showToastWarning = function(message) {
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'warning',
+    title: message,
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+    background: isDarkMode() ? '#23272F' : '#fff',
+    color: isDarkMode() ? '#fff' : '#23272F'
   });
 };

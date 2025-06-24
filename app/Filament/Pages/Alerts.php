@@ -57,15 +57,6 @@ class Alerts extends Page
             $this->assignees = $distinct['assignees']     ?? [];
         }
 
-        $response = Http::get($this->iaServer . '/alarms');
-        if ($response->successful()) {
-            $alarms = $response->json();
-
-            $this->alarms = $alarms;
-            $this->filteredAlarms = $alarms;
-        } 
-
-
         $response = Http::get($this->iaServer . '/alarms/clients');
         if ($response->successful()) {
             $clients = $response->json();
@@ -86,6 +77,14 @@ class Alerts extends Page
         }
 
         $this->getVisibleAlerts();
+    }
+
+    public function updateNewAlarms($newAlarms){
+        if ($newAlarms){
+            $this->alarms = array_merge($newAlarms, $this->alarms);
+            $this->filterAlarms();
+            $this->getVisibleAlerts();
+        }
     }
 
     public function previousPage()
@@ -112,6 +111,8 @@ class Alerts extends Page
 
     public function update_Alarms()
     {   
+        $start = microtime(true);
+
         $response = Http::get($this->iaServer . '/alarms');
         if ($response->successful()) {
             $newAlarms = $response->json();
@@ -146,7 +147,8 @@ class Alerts extends Page
             }
         }
         $this->getVisibleAlerts();
-
+      
+        \Log::info("Function runs in " . ($end - $start) . "seconds");
     }
 
     public function updatedClassification($value)
@@ -198,7 +200,7 @@ class Alerts extends Page
         $this->filteredAlarms = $alarms;
         $this->resetPage();
         $end = microtime(true);
-        \Log::info('Time spend in function: ' . ($end - $start));
+
 
     }
 

@@ -1,9 +1,11 @@
 <x-filament-panels::page>
     
+    @script
     <script>
-        async function handleClassification(level, id, type) {
+
+        window.handleClassification = async function(level, id, type) {
             console.log(`Clasificación seleccionada: ${level}, para la alarma con ID: ${id}`);
-            const url = "{{ $iaServer }}/alarms/classify"; 
+            const url = "{{ $iaServer }}/alarms/classify";
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -11,16 +13,18 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        type: type,                
-                        alarm_id: id,              
-                        classification: level      
+                        type: type,
+                        alarm_id: id,
+                        classification: level
                     })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
+                    window.showToastSuccess(`Alerta clasificada correctamente`);
                 } else {
                     const errorData = await response.json();
+                    window.showToastError(`Hubo un error al clasificar la alerta`);
                 }
             } catch (error) {
                 alert('Error de red al intentar clasificar la alarma.');
@@ -28,7 +32,52 @@
             }
         }
 
+        let after = null;
+
+        async function fetchAlarms(limit = 50) {
+            console.log("Fetching data...")
+            let url = `http://127.0.0.1:8001/alarms?limit=${limit}`;
+            if (after) {
+                url += `&after=${encodeURIComponent(after)}`;
+            }
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+                console.log(data);
+                if (data.length > 0) {
+                    const first = data[0];
+                    after = first.date_inserted || first.created_at;
+                    if (data.lenth === 1){
+                        window.showToastWarning(`Hay 1 nueva alerta.`);
+                    }else{
+                        window.showToastWarning(`Hay ${data.length} nuevas alertas.`);
+                    }
+                }
+
+        
+                
+
+                $wire.updateNewAlarms(data);
+                return data;
+
+            } catch (err) {
+                console.error('Error fetching alarms:', err);
+                return [];
+            }
+        }
+
+        fetchAlarms(100);
+
+        setInterval(() => {
+            fetchAlarms();
+        }, 10000);
+
     </script>
+    @endscript
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -114,29 +163,13 @@
                         <option value="client1">Cliente 1</option>
                         <option value="client2">Cliente 2</option>
                         <option value="client3">Cliente 3</option>
-                    </select>
+                    </select>            
                 </div>
             </div>
         </div>
  
 
-        <div class="flex gap-4"     
-                x-data="{
-                    interval: null,
-                    startPolling() {
-                        if (this.interval) clearInterval(this.interval);
-                        this.interval = setInterval(() => {
-                            if (!this.openReportModal) {
-                                $wire.update_Alarms();
-                            }
-                        }, 20000); 
-                    },
-                    stopPolling() {
-                        if (this.interval) clearInterval(this.interval);
-                    }
-                }"
-                x-init="startPolling()"
-            >
+        <div class="flex gap-4">
 
            @php
                 $alarmsLeft = [];

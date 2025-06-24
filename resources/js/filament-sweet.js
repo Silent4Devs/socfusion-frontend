@@ -133,3 +133,17 @@ window.showModalConfirm = function (
     ...options
   });
 };
+
+window.showToastWarning = function(message) {
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'warning',
+    title: message,
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true,
+    background: isDarkMode() ? '#23272F' : '#fff',
+    color: isDarkMode() ? '#fff' : '#23272F'
+  });
+};
