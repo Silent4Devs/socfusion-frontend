@@ -4,12 +4,14 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions
 
 RUN apt-get update && apt-get install -y \
+    wget \
     curl \
     unzip \
     zip \
-    wkhtmltopdf  \
     g++ \
     make \
+    xfonts-base \
+    xfonts-75dpi \
     libzip-dev \
     libpq-dev \
     libicu-dev \
@@ -24,6 +26,11 @@ RUN apt-get update && apt-get install -y \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && apt-get update \
+    && apt-get install -y ./wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb
 
 RUN install-php-extensions \
     @composer \
