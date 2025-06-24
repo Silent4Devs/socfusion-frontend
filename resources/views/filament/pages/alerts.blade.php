@@ -36,7 +36,7 @@
 
         async function fetchAlarms(limit = 50) {
             console.log("Fetching data...");
-            const url = `{{ $iaServer }}/alarms?limit=${limit}`;
+            let url = `{{ $iaServer }}/alarms?limit=${limit}`;
             if (after) {
                 url += `&after=${encodeURIComponent(after)}`;
             }
