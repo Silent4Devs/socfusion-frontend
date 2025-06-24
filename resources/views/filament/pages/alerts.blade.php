@@ -50,14 +50,12 @@
                 if (data.length > 0) {
                     const first = data[0];
                     after = first.date_inserted || first.created_at;
-                    if (data.lenth === 1){
+                    if (data.length === 1){
                         window.showToastWarning(`Hay 1 nueva alerta.`);
                     }else{
                         window.showToastWarning(`Hay ${data.length} nuevas alertas.`);
                     }
                 }
-
-        
                 
 
                 $wire.updateNewAlarms(data);
