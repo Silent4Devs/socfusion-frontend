@@ -1,4 +1,12 @@
 <x-filament-panels::page>
+    <div class="relative w-full max-w-xs mr-auto">
+        <input 
+            type="text" 
+            placeholder="Buscar..." 
+            class="flex-1 p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
+            wire:model.live="query"
+        />
+    </div>
     <x-filament::section>
         <x-slot name="heading">
             Reportes de Alertas
