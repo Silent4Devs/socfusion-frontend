@@ -23,7 +23,7 @@
             font-size: 14px;
             width: 222mm;
             height: auto; 
-            min-height: 327mm;
+            min-height: 320mm;
             box-sizing: border-box;
             display: flex; 
             flex-direction: column;
