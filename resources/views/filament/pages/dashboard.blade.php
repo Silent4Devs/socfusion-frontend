@@ -218,9 +218,12 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400">{{ $client->email ?? 'sin correo' }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            0 tickets
+                        </span>
                         <span class="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                            {{ $client->reports_count ?? '0' }} alertas
+                            {{ $client->reports_count ?? '0' }} reportes
                         </span>
                     </div>
                 </div>
