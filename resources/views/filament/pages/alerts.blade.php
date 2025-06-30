@@ -206,25 +206,30 @@
 
                     @endif
 
-                        @php
-                            $classification_show = $alarm['real_classification'] ?? $alarm['model_classification'];
+                 @php
+                    $classification_show = $alarm['real_classification'] ?? $alarm['model_classification'];
 
-                            switch ($classification_show) {
-                                case 'High':
-                                    $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
-                                    break;
-                                case 'Medium':
-                                    $color = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
-                                    break;
-                                case 'Low':
-                                    $color = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
-                                    break;
-                                default:
-                                    $color = 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
-                            }
+                    switch ($classification_show) {
+                        case 'High':
+                            $classification_show = 'Alta';
+                            $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+                            break;
+                        case 'Medium':
+                            $classification_show = 'Media';
+                            $color = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
+                            break;
+                        case 'Low':
+                            $classification_show = 'Baja';
+                            $color = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+                            break;
+                        default:
+                            $classification_show = 'Sin clasificación';
+                            $color = 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
+                    }
 
-                            $isManual = !empty($alarm['real_classification']);
-                        @endphp
+                    $isManual = !empty($alarm['real_classification']);
+                @endphp
+
 
                         <div class="mt-1">
                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold {{ $color }}">
@@ -323,21 +328,21 @@
                                             class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                         >
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 11-8 8 8 8 0 018-8zm0 11a1 1 0 100 2 1 1 0 000-2zm0-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z"/></svg>
-                                            High
+                                            Alta
                                         </button>
                                         <button 
                                             @click="classification = 'Medium'; open = false; handleClassification('Medium', {{ $alarm['id'] ?? 'null' }}, '{{ $alarm['alarm_type'] }}')" 
                                             class="flex items-center gap-2 w-full px-4 py-2 text-sm text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                         >
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 11-8 8 8 8 0 018-8zm0 12a1 1 0 110 2 1 1 0 010-2zm-.293-7.707a1 1 0 011.415 1.414L10.414 9l.708.707a1 1 0 01-1.415 1.414L9 10.414l-.707.707a1 1 0 01-1.415-1.414L8.586 9l-.708-.707a1 1 0 011.415-1.414L9 7.586l.707-.707z"/></svg>
-                                            Medium
+                                            Media
                                         </button>
                                         <button 
                                             @click="classification = 'Low'; open = false; handleClassification('Low', {{ $alarm['id'] ?? 'null' }}, '{{ $alarm['alarm_type'] }}')" 
                                             class="flex items-center gap-2 w-full px-4 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                         >
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11H9v4h2V7zm0 6H9v2h2v-2z"/></svg>
-                                            Low
+                                            Baja
                                         </button>
                                     </div>
 
@@ -346,8 +351,14 @@
 
                             <template x-if="classification">
                                 <div class="mt-2 px-3 py-1 rounded text-sm text-gray-700 dark:text-gray-300">
-                                    Clasificada: <strong x-text="classification"></strong>
+                                    Clasificada:
+                                    <strong
+                                        x-text="classification === 'High' ? 'Alta' :
+                                                classification === 'Medium' ? 'Media' :
+                                                classification === 'Low' ? 'Baja' : 'Sin clasificación'">
+                                    </strong>
                                 </div>
+
                             </template>
                         </div>
                         @endif
@@ -550,25 +561,30 @@
 
                     @endif
 
-                        @php
-                            $classification_show = $alarm['real_classification'] ?? $alarm['model_classification'];
+                    @php
+                        $classification_show = $alarm['real_classification'] ?? $alarm['model_classification'];
 
-                            switch ($classification_show) {
-                                case 'High':
-                                    $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
-                                    break;
-                                case 'Medium':
-                                    $color = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
-                                    break;
-                                case 'Low':
-                                    $color = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
-                                    break;
-                                default:
-                                    $color = 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
-                            }
+                        switch ($classification_show) {
+                            case 'High':
+                                $classification_show = 'Alta';
+                                $color = 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+                                break;
+                            case 'Medium':
+                                $classification_show = 'Media';
+                                $color = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
+                                break;
+                            case 'Low':
+                                $classification_show = 'Baja';
+                                $color = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+                                break;
+                            default:
+                                $classification_show = 'Sin clasificación';
+                                $color = 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
+                        }
 
-                            $isManual = !empty($alarm['real_classification']);
-                        @endphp
+                        $isManual = !empty($alarm['real_classification']);
+                    @endphp
+
 
                         <div class="mt-1">
                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold {{ $color }}">
@@ -668,21 +684,21 @@
                                             class="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                         >
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 11-8 8 8 8 0 018-8zm0 11a1 1 0 100 2 1 1 0 000-2zm0-8a1 1 0 00-.993.883L9 6v4a1 1 0 001.993.117L11 10V6a1 1 0 00-1-1z"/></svg>
-                                            High
+                                            Alta
                                         </button>
                                         <button 
                                             @click="classification = 'Medium'; open = false; handleClassification('Medium', {{ $alarm['id'] ?? 'null' }}, '{{ $alarm['alarm_type'] }}')" 
                                             class="flex items-center gap-2 w-full px-4 py-2 text-sm text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                         >
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 11-8 8 8 8 0 018-8zm0 12a1 1 0 110 2 1 1 0 010-2zm-.293-7.707a1 1 0 011.415 1.414L10.414 9l.708.707a1 1 0 01-1.415 1.414L9 10.414l-.707.707a1 1 0 01-1.415-1.414L8.586 9l-.708-.707a1 1 0 011.415-1.414L9 7.586l.707-.707z"/></svg>
-                                            Medium
+                                            Media
                                         </button>
                                         <button 
                                             @click="classification = 'Low'; open = false; handleClassification('Low', {{ $alarm['id'] ?? 'null' }}, '{{ $alarm['alarm_type'] }}')" 
                                             class="flex items-center gap-2 w-full px-4 py-2 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-gray-700 transition-colors duration-150"
                                         >
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11H9v4h2V7zm0 6H9v2h2v-2z"/></svg>
-                                            Low
+                                            Baja
                                         </button>
                                     </div>
 
@@ -691,7 +707,12 @@
 
                             <template x-if="classification">
                                 <div class="mt-2 px-3 py-1 rounded text-sm text-gray-700 dark:text-gray-300">
-                                    Clasificada: <strong x-text="classification"></strong>
+                                    Clasificada:
+                                    <strong
+                                        x-text="classification === 'High' ? 'Alta' :
+                                                classification === 'Medium' ? 'Media' :
+                                                classification === 'Low' ? 'Baja' : 'Sin clasificación'">
+                                    </strong>
                                 </div>
                             </template>
                         </div>
