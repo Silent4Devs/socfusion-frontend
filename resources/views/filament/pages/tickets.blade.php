@@ -89,31 +89,31 @@
                                         @case('Low')
                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-green-700 dark:text-green-300">
                                                 <span class="inline-block w-2 h-2 rounded-full bg-green-400 dark:bg-green-600"></span>
-                                                Low
+                                                Baja
                                             </span>
                                             @break
                                         @case('Medium')
                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-yellow-700 dark:text-yellow-200">
                                                 <span class="inline-block w-2 h-2 rounded-full bg-yellow-400 dark:bg-yellow-600"></span>
-                                                Medium
+                                                Media
                                             </span>
                                             @break
                                         @case('High')
                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-orange-700 dark:text-orange-300">
                                                 <span class="inline-block w-2 h-2 rounded-full bg-orange-400 dark:bg-orange-600"></span>
-                                                High
+                                                Alta
                                             </span>
                                             @break
                                         @case('Critical')
                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-red-700 dark:text-red-300">
                                                 <span class="inline-block w-2 h-2 rounded-full bg-red-400 dark:bg-red-600"></span>
-                                                Critical
+                                                Critica
                                             </span>
                                             @break
                                         @default
                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-300">
                                                 <span class="inline-block w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-600"></span>
-                                                {{ $ticket["priority"] ?? 'Unknown' }}
+                                                {{ $ticket["priority"] ?? 'Desconocida' }}
                                             </span>
                                     @endswitch
                                 </td>
