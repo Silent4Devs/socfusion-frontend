@@ -18,7 +18,7 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                 <div class="relative flex-1">
-                    <input type="text" wire:model.live="search" placeholder="Search tickets..." 
+                    <input type="text" wire:model.live="search" placeholder="Buscar tickets..." 
                            class="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400">
                     <div class="absolute left-3 top-2.5 text-gray-400 dark:text-gray-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,11 +28,11 @@
                 </div>
                 
                 <select wire:model.live="status" class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                    <option value="">All</option>
-                    <option value="Pending">Pending</option>
-                    <option value="In Process">In Process</option>
-                    <option value="Resolved">Resolved</option>
-                    <option value="Closed">Closed</option>
+                    <option value="">Todos</option>
+                    <option value="Pending">Pendiente</option>
+                    <option value="In Process">En proceso</option>
+                    <option value="Resolved">Resueltos</option>
+                    <option value="Closed">Cerrados</option>
                 </select>
             </div>
             
@@ -68,19 +68,19 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @switch($ticket["status"])
                                         @case('In Process')
-                                            <span class="px-2 py-1 text-xs text-blue-800  dark:text-blue-200">In Process</span>
+                                            <span class="px-2 py-1 text-xs text-blue-800  dark:text-blue-200">En proceso</span>
                                             @break
                                         @case('Resolved')
-                                            <span class="px-2 py-1 text-xs  text-green-800  dark:text-green-200">Resolved</span>
+                                            <span class="px-2 py-1 text-xs  text-green-800  dark:text-green-200">Resuelto</span>
                                             @break
                                         @case('Pending')
-                                            <span class="px-2 py-1 text-xs text-yellow-800 dark:text-yellow-200">Pending</span>
+                                            <span class="px-2 py-1 text-xs text-yellow-800 dark:text-yellow-200">Pendiente</span>
                                             @break
                                         @case('Closed')
-                                            <span class="px-2 py-1 text-xs  text-purple-800  dark:text-blue-300">Closed</span>
+                                            <span class="px-2 py-1 text-xs  text-purple-800  dark:text-blue-300">Cerrado</span>
                                             @break
                                         @default
-                                            <span class="px-2 py-1 text-xs  text-gray-800  dark:text-gray-200">{{ $ticket["status"] ?? 'Unknown' }}</span>
+                                            <span class="px-2 py-1 text-xs  text-gray-800  dark:text-gray-200">{{ $ticket["status"] ?? 'Desconocido' }}</span>
                                     @endswitch
                                 </td>
 

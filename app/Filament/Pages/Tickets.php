@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Http;
 class Tickets extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static ?string $title = 'Tickets';
+
 
     protected static string $view = 'filament.pages.tickets';
     protected ?string $heading = '';
