@@ -13,6 +13,8 @@ class Clients extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    protected static ?string $title = 'Clientes';
+
     protected static string $view = 'filament.pages.clients';
     protected ?string $heading = '';
 
