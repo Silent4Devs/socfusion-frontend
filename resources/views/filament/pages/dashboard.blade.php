@@ -237,8 +237,9 @@
               
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">Alertas por Hora (últimas 24h)</h2>
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-white"> <small> Alertas Logrhythm</small></h2>
                         <div class="flex items-center space-x-2">
+                            <small>Alertas PRTG</small>
                             <span class="text-sm text-gray-500 dark:text-gray-400">Proyección próximas 6h</span>
                             <span class="h-2 w-2 rounded-full bg-red-500"></span>
                         </div>
