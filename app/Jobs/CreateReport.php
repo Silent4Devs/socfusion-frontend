@@ -62,7 +62,7 @@ class CreateReport implements ShouldQueue
 
             if ($response->successful()) {
                 $alarmData = $response->json();
-                $client = $this->findClient($alarmData); // Se asocia con el cliente
+                $client = $this->findClient($alarmData); 
                 if ($client) {
                     $report->client()->associate($client);
                     $report->save();

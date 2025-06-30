@@ -19,6 +19,8 @@ class Alerts extends Page
     protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
     protected ?string $heading = '';
 
+    protected static ?string $title = 'Alertas';
+
     protected static string $view = 'filament.pages.alerts';
 
     use WithFileUploads;

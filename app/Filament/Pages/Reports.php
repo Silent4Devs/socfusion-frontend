@@ -12,6 +12,7 @@ class Reports extends Page
 
     use WithPagination;
     
+    protected static ?string $title = 'Reportes';
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected ?string $heading = '';
 

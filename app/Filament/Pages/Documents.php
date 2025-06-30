@@ -11,6 +11,8 @@ class Documents extends Page
 
     protected static string $view = 'filament.pages.documents';
     protected ?string $heading = '';
+    protected static ?string $title = 'Documentos';
+
 
     public $documents;
     public $clients;

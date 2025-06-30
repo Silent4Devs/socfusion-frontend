@@ -9,6 +9,8 @@ class ChatSoc extends Page
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-ellipsis';
     protected ?string $heading = '';
 
+    protected static ?string $title = 'Asistente';
+
     protected static string $view = 'filament.pages.chat-soc';
 
     public $iaServer;
