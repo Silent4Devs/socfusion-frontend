@@ -52,8 +52,8 @@
                         {{ $alert['entity_name'] }} · {{ \Carbon\Carbon::parse($alert['date_inserted'])->diffForHumans() }}
                     </p>
                 @else
-                    <p class="text-xs text-gray-800 dark:text-white">{{ $alert['message_raw'] ?? 'No message' }}</p>
-                    <p class="text-xs text-gray-600 dark:text-gray-300">
+                    <p class="text-xs text-gray-800 dark:text-white">{{ !empty($alert['message_raw']) ? $alert['message_raw'] : 'Alerta sin información' }}</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 ml-6">
                         {{ \Carbon\Carbon::parse($alert['created_at'] ?? now())->diffForHumans() }}
                     </p>
                 @endif
