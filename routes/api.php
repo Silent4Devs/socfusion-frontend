@@ -26,3 +26,4 @@ Route::get('/document', [DocumentsController::class, 'proxy']);
 Route::post('/chats/{chat}/messages', [ChatHistoryController::class, 'storeMessage']);
 Route::post('/chats', [ChatHistoryController::class, 'storeChats']);
 Route::get('/messages/{chatId}', [ChatHistoryController::class, 'getMessages']);
+Route::post('/feedback/{messageId}', [ChatHistoryController::class, 'setFeedback']);

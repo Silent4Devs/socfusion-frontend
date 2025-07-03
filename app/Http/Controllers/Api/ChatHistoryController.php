@@ -53,4 +53,17 @@ class ChatHistoryController extends Controller
         return response()->json($messages, 200);
     }
 
+    public function setFeedback(Request $request, $messageId)
+    {
+        $validated = $request->validate([
+            'feedback' => 'required|in:like,dislike',
+        ]);
+
+        $message = Message::findOrFail($messageId);
+
+        $message->feedback = $validated['feedback'];
+        $message->save();
+
+        return response()->json(['success' => true, 'feedback' => $message->feedback]);
+    }
 }

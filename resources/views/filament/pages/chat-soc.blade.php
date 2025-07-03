@@ -7,7 +7,7 @@
     <script>
 
         let socket;
-        
+        let lastSavedMessageId = null;
         let chatId = null;
 
         const notyf = new Notyf();
@@ -19,7 +19,7 @@
                 if (message.sender_type === 'user') {
                     createUserMessage(message.content);
                 } else if (message.sender_type === 'bot') {
-                    createBotMessage(message.content);
+                    createBotMessage(message.content, message.id);
                 }
             });
         }
@@ -36,7 +36,18 @@
                 });
         }
 
-        
+        function handleFeedback(messageId, feedback) {
+            fetch(`/api/feedback/${messageId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ feedback })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                }
+            });
+        }
 
         function sendMessage(message, sender_type = 'user') {
             if (!chatId) {
@@ -53,8 +64,7 @@
                 .then(res => res.json())
                 .then(chat => {
                     chatId = chat.id;
-                    console.log("Chat creado");
-                    console.log(chat);
+                   
                     saveMessage(message, chatId, sender_type);
                 });
             } else {
@@ -76,6 +86,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                lastSavedMessageId = data.id;
             });
         }
 
@@ -86,8 +97,6 @@
             const iconContainer = document.createElement("div");
             iconContainer.className = "flex-shrink-0 mr-3 p-2 rounded-lg bg-white dark:bg-gray-700 shadow-sm";
             
-
-
             const docIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             docIcon.setAttribute("class", "w-5 h-5 text-primary-500 dark:text-primary-400");
             docIcon.setAttribute("fill", "none");
@@ -164,7 +173,7 @@
         socket.onmessage = function (event) {
             
             const data = JSON.parse(event.data);
-            
+          
             if (pendingBotMessage) {
                 const botMessageContainer = pendingBotMessage.parentNode;
                 
@@ -174,9 +183,81 @@
 
                 pendingBotMessage.classList.remove("animate-pulse");
                 
+                const nextParagraph = pendingBotMessage.nextElementSibling;
+
+                const buttonContainer = document.createElement("div");
+                buttonContainer.className = "flex items-center space-x-3 mt-2";
+
+                const likeButton = document.createElement("button");
+                likeButton.className = "text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
+                likeButton.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                </svg>
+                `;
+
+                const dislikeButton = document.createElement("button");
+                dislikeButton.className = "text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
+                dislikeButton.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+                </svg>
+                `;
+                dislikeButton.dataset.active = "false";
+                likeButton.dataset.active = "false";
+
+                likeButton.onclick = () => {
+                    if (likeButton.dataset.active === "false") {
+                        likeButton.classList.add("bg-green-100", "text-green-600");
+                        likeButton.classList.remove("text-gray-500", "hover:text-green-500");
+                        likeButton.dataset.active = "true";
+
+                        if (dislikeButton.dataset.active === "true") {
+                            dislikeButton.classList.remove("bg-red-100", "text-red-600");
+                            dislikeButton.classList.add("text-gray-500", "hover:text-red-500");
+                            dislikeButton.dataset.active = "false";
+                        }
+                        
+                        handleFeedback(lastSavedMessageId, 'like');
+                    } else {
+
+                        likeButton.classList.remove("bg-green-100", "text-green-600");
+                        likeButton.classList.add("text-gray-500", "hover:text-green-500");
+                        likeButton.dataset.active = "false";
+                    }
+                };
+                
+                dislikeButton.onclick = () => {
+                    if (dislikeButton.dataset.active === "false") {
+                        
+                        dislikeButton.classList.add("bg-red-100", "text-red-600");
+                        dislikeButton.classList.remove("text-gray-500", "hover:text-red-500");
+                        dislikeButton.dataset.active = "true";
+                        
+                        if (likeButton.dataset.active === "true") {
+                            likeButton.classList.remove("bg-green-100", "text-green-600");
+                            likeButton.classList.add("text-gray-500", "hover:text-green-500");
+                            likeButton.dataset.active = "false";
+                        }
+                        
+                        handleFeedback(lastSavedMessageId, 'dislike');
+                    } else {
+                        
+                        dislikeButton.classList.remove("bg-red-100", "text-red-600");
+                        dislikeButton.classList.add("text-gray-500", "hover:text-red-500");
+                        dislikeButton.dataset.active = "false";
+                    }
+                };
+
+                buttonContainer.appendChild(likeButton);
+                buttonContainer.appendChild(dislikeButton);
+
+                if (nextParagraph && nextParagraph.tagName === "P") {
+                    nextParagraph.appendChild(buttonContainer);
+                }
                 const files = data.files;
                 const validFiles = files.filter(file => file !== null);
-
+                
                 if (validFiles.length > 0 && data?.show_files === true) {
                     const docsContainer = document.createElement("div");
                     docsContainer.className = "mt-4 pt-4 border-t border-gray-200/30 dark:border-gray-700/30";
@@ -211,8 +292,59 @@
 
                     botMessageContainer.appendChild(docsContainer);
                 }
-                pendingBotMessage = null;
-            }
+
+
+                const links = data.links || [];
+                console.log("Enlaces recibidos:", links);
+                if (links.length > 0) {
+                    const header = document.createElement('div');
+                    header.className = `
+                        text-[0.925rem] font-medium
+                        text-gray-700 dark:text-blue-100
+                        mb-3
+                        tracking-normal
+                        leading-snug
+                    `;
+
+                    const headerText = document.createElement('span');
+                    headerText.className = `
+                        pb-1
+                        border-b border-gray-200 dark:border-blue-900/50
+                        select-none
+                    `;
+                    headerText.textContent = 'Información adicional';
+
+                    header.appendChild(headerText);
+                    
+                
+                    const linksContainer = document.createElement('div');
+                    linksContainer.className = 'mt-1 space-y-2 animate-fade-in';
+                    
+                    links.forEach(link => {
+                        const linkElement = document.createElement('a');
+                        linkElement.href = link;
+                        linkElement.target = '_blank'; 
+                        linkElement.rel = 'noopener noreferrer';
+                        linkElement.className = 'group flex items-center px-3 py-2 rounded-md transition-all text-blue-400 hover:text-blue-200 hover:underline underline-offset-4 decoration-blue-500/50 hover:decoration-blue-400 duration-200';
+                        linkElement.textContent = link;
+                        
+                        const arrowIcon = document.createElement('span');
+                        arrowIcon.className = 'ml-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-xs';
+                        arrowIcon.textContent = '↗';
+                        
+                        linkElement.appendChild(arrowIcon);
+                        linksContainer.appendChild(linkElement);
+                    });
+                    
+                    const container = document.createElement('div');
+                    container.className = 'mt-3';
+                    
+                    container.appendChild(header);
+                    container.appendChild(linksContainer);
+                    botMessageContainer.appendChild(container);
+                }
+                    pendingBotMessage = null;
+                }
             disableInput(false);  
         };
 
@@ -236,7 +368,14 @@
             
         };
 
-
+        function toggleButton(button, isActive, activeClasses, inactiveClasses) {
+            button.classList.toggle(activeClasses.bg, isActive);
+            button.classList.toggle(activeClasses.text, isActive);
+            button.classList.toggle(inactiveClasses.text, !isActive);
+            button.classList.toggle(inactiveClasses.hover, !isActive);
+            button.dataset.active = isActive ? "true" : "false";
+        }
+        
         let pendingBotMessage = null;
         let loadingBox = null;
 
@@ -250,7 +389,7 @@
             return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        function createBotMessage(content) {
+        function createBotMessage(content, messageId = null) {
             const chatMessages = document.getElementById("chat-messages");
 
             const botWrapper = document.createElement("div");
@@ -286,14 +425,63 @@
             const time = document.createElement("p");
             time.className = "text-xs text-gray-500 dark:text-gray-400 mt-1";
             time.innerText = currentTime();
+
+            const nextParagraph = document.createElement("p");
+
+            const buttonContainer = document.createElement("div");
+            buttonContainer.className = "flex items-center space-x-3 mt-2";
+
+            const likeButton = document.createElement("button");
+            likeButton.className = "text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
+            likeButton.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+            </svg>
+            `;
+
+            const dislikeButton = document.createElement("button");
+            dislikeButton.className = "text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors";
+            dislikeButton.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>
+            </svg>
+            `;
+            dislikeButton.dataset.active = "false"; 
+            likeButton.dataset.active = "false"; 
             
+            likeButton.onclick = () => {
+                const isActivating = likeButton.dataset.active === "false";
+
+                toggleButton(likeButton, isActivating, { bg: "bg-green-100", text: "text-green-600" }, { text: "text-gray-500", hover: "hover:text-green-500" });
+                toggleButton(dislikeButton, false, { bg: "bg-red-100", text: "text-red-600" }, { text: "text-gray-500", hover: "hover:text-red-500" });
+
+                if (isActivating) handleFeedback(messageId, 'like');
+            };
+
+            dislikeButton.onclick = () => {
+                const isActivating = dislikeButton.dataset.active === "false";
+
+                toggleButton(dislikeButton, isActivating, { bg: "bg-red-100", text: "text-red-600" }, { text: "text-gray-500", hover: "hover:text-red-500" });
+                toggleButton(likeButton, false, { bg: "bg-green-100", text: "text-green-600" }, { text: "text-gray-500", hover: "hover:text-green-500" });
+
+                if (isActivating) handleFeedback(messageId, 'dislike');
+            };
+
+            buttonContainer.appendChild(likeButton);
+            buttonContainer.appendChild(dislikeButton);
+
+            if (nextParagraph && nextParagraph.tagName === "P") {
+                nextParagraph.appendChild(buttonContainer);
+            }
+
             const botTriangle = document.createElement("div");
             botTriangle.className = "absolute -left-1.5 top-3.5 w-3 h-3 rotate-45 bg-white dark:bg-gray-800 border-l border-b border-gray-100 dark:border-gray-700";
             
             loadingBox.appendChild(loadingText);
             loadingBox.appendChild(time);
             loadingBox.appendChild(botTriangle);
-            
+            loadingBox.appendChild(nextParagraph);
+
             botWrapper.appendChild(botIconWrapper);
             botWrapper.appendChild(loadingBox);
             
@@ -435,6 +623,7 @@
                 const time = document.createElement("p");
                 time.className = "text-xs text-gray-500 dark:text-gray-400 mt-1";
                 time.innerText = currentTime();
+                
                 
                 const botTriangle = document.createElement("div");
                 botTriangle.className = "absolute -left-1.5 top-3.5 w-3 h-3 rotate-45 bg-white dark:bg-gray-800 border-l border-b border-gray-100 dark:border-gray-700";
