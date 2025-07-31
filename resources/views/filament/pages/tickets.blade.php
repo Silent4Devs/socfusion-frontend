@@ -395,9 +395,11 @@
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                 @foreach ($organizations as $org)
-                                    <option value="{{ $org }}">{{ $org }}</option>
-                                @endforeach
+                                <option value="Work Order">Work Order</option>
+                                <option value="Incidencias">Incidencias</option>
+                                <option value="Actividades Sospechosas">Actividades Sospechosas</option>
+                                
+
                             </select>
                             @error('company') <span class="text-xs text-red-600 dark:text-red-400">{{ $message }}</span> @enderror
                         </div>
