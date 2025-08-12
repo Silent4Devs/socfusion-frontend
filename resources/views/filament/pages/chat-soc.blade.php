@@ -365,7 +365,6 @@
             socket = new WebSocket(iaServerUrl+"/chat-soc");
             const loadingSocket = document.getElementById("ws-loading");
             loadingSocket.style.display = 'block';
-
         };
 
         socket.onerror = function (error) {
