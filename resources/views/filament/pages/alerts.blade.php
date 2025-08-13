@@ -859,6 +859,23 @@
                             @if (!empty($alarm['active']))
                                 <p><strong>Activo:</strong> {{ $alarm['active'] ? 'Sí' : 'No' }}</p>
                             @endif
+
+                            @if (!empty($alarm['device']))
+                                <p><strong>Device:</strong> {{ $$alarm['device']}}</p>
+                            @endif
+
+                            @if (!empty($alarm['group']))
+                                <p><strong>Grupo:</strong> {{ $alarm['group']}}</p>
+                            @endif
+
+                            @if (!empty($alarm['host']))
+                                <p><strong>Host:</strong> {{ $alarm['host']}}</p>
+                            @endif
+
+                            @if (!empty($alarm['probe']))
+                                <p><strong>Sonda:</strong> {{ $alarm['probe'] }}</p>
+                            @endif
+                            
                         @endif
                         
                         <div class="pt-3 flex justify-end">
