@@ -22,10 +22,10 @@
             margin: 0;
             font-size: 14px;
             width: 222mm;
-            height: auto; 
+            height: auto;
             min-height: 320mm;
             box-sizing: border-box;
-            display: flex; 
+            display: flex;
             flex-direction: column;
         }
 
@@ -40,7 +40,7 @@
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-        
+
 
         .header {
             display: flex;
@@ -48,7 +48,7 @@
             align-items: center;
             padding: 10px;
         }
-        
+
         .client-avatar {
             width: 70px;
             height: 70px;
@@ -57,20 +57,20 @@
             border: 2px solid #e0e0e0;
             margin-right: 20px;
         }
-        
+
         .header-info h1 {
             font-size: 22px;
             margin: 0 0 5px 0;
             color: #222222;
             font-weight: 600;
         }
-        
+
         .header-info p {
             color: #666666;
             margin: 0;
             font-size: 14px;
         }
-        
+
         .report-title {
             font-weight: 700;
             font-size: 1.3rem;
@@ -80,21 +80,21 @@
             position: relative;
             letter-spacing: -0.025em;
         }
-        
+
         .section {
             padding: 10px;
             width: 50%;
             box-sizing: border-box;
         }
-        
+
         .section-title {
             color: #222222;
             padding-bottom: 8px;
             border-bottom: 1px solid #f0f0f0;
             font-weight: 600;
         }
-        
-        
+
+
         .detail-label {
             letter-spacing: 0.5px;
             color: #666666;
@@ -102,7 +102,7 @@
             display: block;
             font-weight: 500;
         }
-        
+
         .detail-value {
             font-size: 15px;
             word-break: break-word;
@@ -110,38 +110,38 @@
             border-bottom: 1px dashed #e0e0e0;
             color: #333333;
         }
-        
+
         .events-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
             font-size: 14px;
         }
-        
+
         .events-table th {
             text-align: left;
             padding: 10px;
             background-color: #f8f8f8;
             color: #444444;
             font-weight: 500;
-       
+
         }
-        
+
         .events-table td {
             padding: 10px;
         }
-        
+
         .critical {
             color: #d32f2f;
             font-weight: 500;
         }
-        
+
         .signature {
             padding: 20px;
             text-align: right;
             border-top: 1px solid #f0f0f0;
         }
-        
+
         .signature-line {
             display: inline-block;
             width: 180px;
@@ -161,12 +161,12 @@
             position: absolute;
             bottom: 0;
         }
-        
+
         .section-full{
             width: 100%;
             padding: 10px;
         }
-        
+
     </style>
 </head>
 <body>
@@ -216,7 +216,7 @@
                 <div style="display: inline-block; width: 50%; height: 100%; background-color: #92c13b;"></div>
             </div>
         @endisset
-        
+
         <div class="min-height: 200mm;;">
             <div style="width: 48%; box-sizing: border-box; display: inline-block; vertical-align: top; padding: 10px;">
                 <div style="font-weight: bold; font-size: 16px; margin-top: 10px; border-bottom: 1px solid #ccc; margin-botom: 10px;">
@@ -233,6 +233,15 @@
                         @endif
                     </div>
                 </div>
+
+                @isset($alarm['common_event_name'])
+                    @if (!empty($alarm['common_event_name']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Evento</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['common_event_name'] }}</div>
+                        </div>
+                    @endif
+                @endisset
 
                 @isset($alarm['alarm_rule_name'])
                     @if (!empty($alarm['alarm_rule_name']))
@@ -339,6 +348,15 @@
                     @endif
                 @endisset
 
+                @isset($alarm['severity'])
+                    @if (!empty($alarm['severity']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Severidad</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['severity'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
                 @isset($alarm['priority'])
                     @if (!empty($alarm['priority']))
                         <div style="margin-bottom: 10px;">
@@ -360,6 +378,42 @@
                         <div style="margin-bottom: 10px;">
                             <span style="display: block; font-weight: bold; font-size: 13px;">Sensor</span>
                             <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['sensor'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
+                @isset($alarm['impacted_ip'])
+                    @if (!empty($alarm['impacted_ip']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">IP Destino</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_ip'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
+                @isset($alarm['impacted_host_name'])
+                    @if (!empty($alarm['impacted_host_name']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Hostname Destino</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_host_name'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
+                @isset($alarm['impacted_entity_name'])
+                    @if (!empty($alarm['impacted_entity_name']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Nombre Destino</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_entity_name'] }}</div>
+                        </div>
+                    @endif
+                @endisset
+
+                @isset($alarm['impacted_port'])
+                    @if (!empty($alarm['impacted_port']))
+                        <div style="margin-bottom: 10px;">
+                            <span style="display: block; font-weight: bold; font-size: 13px;">Puerto Destino</span>
+                            <div style="margin-left: 5px; font-size: 13px;">{{ $alarm['impacted_port'] }}</div>
                         </div>
                     @endif
                 @endisset
@@ -389,7 +443,7 @@
                     </div>
                 </div>
                 @endif
-                
+
                 @if(isset($comments) && !empty($comments))
                     <div class="detail-item">
                         <span class="detail-label">Comentarios Adicionales</span>
@@ -399,7 +453,7 @@
                     </div>
                 @endif
 
-                <!-- 
+                <!--
                 Add Ticket Tracking Information
                 <div class="detail-item">
                     <span class="detail-label">Ticket de Seguimiento</span>
