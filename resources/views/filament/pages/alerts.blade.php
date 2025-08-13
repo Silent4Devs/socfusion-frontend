@@ -861,7 +861,7 @@
                             @endif
 
                             @if (!empty($alarm['device']))
-                                <p><strong>Device:</strong> {{ $$alarm['device']}}</p>
+                                <p><strong>Device:</strong> {{ $alarm['device']}}</p>
                             @endif
 
                             @if (!empty($alarm['group']))
