@@ -121,7 +121,8 @@ class Clients extends Page
         $client = Client::findOrFail($id);
         $this->clientId = $client->id;
         $this->name = $client->name;
-        $this->email = $client->email;
+        $this->emails = is_array($client->emails) ? $client->emails : [];
+
         $this->phone = $client->phone;
         $this->address = $client->address;
         $this->logo = $client->logo;
@@ -138,7 +139,8 @@ class Clients extends Page
     {
         $this->validate([
             'name' => 'required|string|max:255|unique:clients,name,' . $this->clientId,
-            'email' => 'required|email|unique:clients,email,' . $this->clientId,
+            'emails'      => 'required|array|min:1',
+            'emails.*'    => 'bail|required|email:rfc|max:255|distinct',            
             'phone' => 'nullable|string|max:20|regex:/^\d+$/',
             'address' => 'nullable|string|max:255',
             'logo' => $this->isLogoFile() ? 'nullable|image|max:2048' : 'nullable|string',
