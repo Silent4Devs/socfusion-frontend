@@ -121,34 +121,152 @@
                     </div>
 
                     @if($report['status'] === 'Completed')  
-                    <div class="grid gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl">
-                        <a href="{{ route('reports.download', ['id' => $report->id]) }}" 
-                        class="future-btn future-btn--primary group">
-                            <span class="future-btn__icon">
-                                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                </svg>
-                            </span>
-                            <span class="future-btn__text">Reporte completo</span>
-                            <span class="future-btn__badge">PDF</span>
-                            <span class="future-btn__hover-effect"></span>
-                            <span class="future-btn__border"></span>
-                        </a>
+                        <div x-data="{ open:false }" class="grid gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl">
 
-                      
-                        <button wire:click="confirmDeletion({{ $report->id }})"
-                                class="future-btn future-btn--danger group">
-                            <span class="future-btn__icon">
-                               
-                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            <a href="{{ route('reports.download', ['id' => $report->id]) }}" 
+                                class="future-btn future-btn--primary group">
+                                <span class="future-btn__icon">
+                                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                                 </svg>
-                            </span>
-                            <span class="future-btn__text">Eliminar reporte</span>
-                            <span class="future-btn__hover-effect"></span>
-                            <span class="future-btn__border"></span>
-                        </button>
-                    </div>
+                                </span>
+                                <span class="future-btn__text">Reporte completo</span>
+                                <span class="future-btn__badge">PDF</span>
+                                <span class="future-btn__hover-effect"></span>
+                                <span class="future-btn__border"></span>
+                            </a>
+
+                            <button
+                                type="button"
+                                @click="open = true"
+                                class="future-btn group inline-flex items-center justify-center future-btn--secondary
+                                    bg-indigo-600/10 text-indigo-700 dark:text-indigo-300 border border-indigo-600/30
+                                    hover:bg-indigo-600/20 dark:hover:bg-indigo-500/20 rounded-xl px-4 py-2 relative">
+                                <span class="future-btn__icon">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 12H8m8-4H8m8 8H8M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                </span>
+                                <span class="future-btn__text">Mandar correo</span>
+                                <span class="future-btn__hover-effect"></span>
+                                <span class="future-btn__border"></span>
+                            </button>
+
+                            <button wire:click="confirmDeletion({{ $report->id }})"
+                                    class="future-btn future-btn--danger group">
+                                <span class="future-btn__icon">
+                                <svg class="w-5 h-5 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                </span>
+                                <span class="future-btn__text">Eliminar reporte</span>
+                                <span class="future-btn__hover-effect"></span>
+                                <span class="future-btn__border"></span>
+                            </button>
+
+                            <div
+                                x-cloak
+                                x-show="open"
+                                x-transition.opacity
+                                class="fixed inset-0 z-50 flex items-center justify-center"
+                                aria-modal="true" role="dialog">
+
+                                <!-- Fondo -->
+                                <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="open=false"></div>
+
+                                <!-- Caja del modal -->
+                                <div
+                                x-transition
+                                class="relative w-full max-w-lg mx-4 rounded-2xl shadow-2xl border
+                                        bg-white dark:bg-gray-800 border-gray-200/70 dark:border-gray-700/60">
+
+                                <!-- Header -->
+                                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    Mandar correo
+                                    </h3>
+                                    <button type="button" @click="open=false"
+                                            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none"
+                                            aria-label="Cerrar">
+                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Formulario -->
+                                <form
+                                    wire:submit.prevent="sendEmail"
+                                    class="px-6 pt-5 pb-6 space-y-4">
+
+                                    <!-- Asunto -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Asunto
+                                    </label>
+                                    <input
+                                        type="text"
+                                        wire:model.defer="emailSubject"
+                                        placeholder="Escribe el asunto"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    @error('emailSubject')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Cliente -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Cliente
+                                    </label>
+                                    <select
+                                        wire:model.defer="selectedClientId"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                        <option value="">Selecciona un cliente…</option>
+                                        @foreach($clients as $client)
+                                        <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('selectedClientId')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Footer acciones -->
+                                    <div class="flex items-center justify-end gap-3 pt-2">
+                                    <button type="button" @click="open=false"
+                                            class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700
+                                                    text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900
+                                                    hover:bg-gray-50 dark:hover:bg-gray-800">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl
+                                                    bg-indigo-600 text-white hover:bg-indigo-700
+                                                    focus:outline-none focus:ring-2 focus:ring-indigo-500/60">
+                                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 8l7.89 3.3a2 2 0 001.5 0L21 8m-9 4v6m-6 2h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        Enviar
+                                    </button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+
                     @else
                         <div class="grid gap-3 p-4 dark:bg-gray-900  bg-white rounded-xl shadow-sm dark:shadow-none">
                         

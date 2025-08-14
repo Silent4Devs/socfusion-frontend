@@ -170,15 +170,15 @@
 
     <div id="client-modal"   
         x-show="open"
-         x-transition:enter="transition ease-out duration-200"
-     x-transition:enter-start="opacity-0"
-     x-transition:enter-end="opacity-100"
-     x-transition:leave="transition ease-in duration-150"
-     x-transition:leave-start="opacity-100"
-     x-transition:leave-end="opacity-0"
-     @open-client-modal.window="open = true"
-     @close-client-modal.window="open = false"
-      class="fixed inset-0 z-50 overflow-y-auto">
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @open-client-modal.window="open = true"
+        @close-client-modal.window="open = false"
+        class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
             <div class="absolute inset-0 bg-black/50 dark:bg-gray-900/80 backdrop-blur-sm"></div>
@@ -206,20 +206,46 @@
                         @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Email</label>
-                        <input
-                            type="email"
-                            wire:model.defer="email"
-                            required
-                            class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/80 text-gray-800 dark:text-gray-100 px-3 py-2 text-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                            placeholder="Ej. ejemplo@empresa.com"
-                            autocomplete="off"
-                        >
-                        @error('email')
-                            <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span>
-                        @enderror
-                    </div>
+                        <div x-data="emailsField()" x-init="init()">
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Emails</label>
+
+                            <div
+                                class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/80
+                                    text-gray-800 dark:text-gray-100 px-2 py-2 text-sm focus-within:ring-2 focus-within:ring-blue-500
+                                    focus-within:border-blue-500 transition-all"
+                                @click="$refs.input.focus()"
+                            >
+                                <div class="flex flex-wrap gap-2">
+                                <!-- chips -->
+                                <template x-for="(email, idx) in emails" :key="idx">
+                                    <span class="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
+                                    <span x-text="email"></span>
+                                    <button type="button" class="leading-none hover:opacity-80" @click="remove(idx)" aria-label="Eliminar email">&times;</button>
+                                    </span>
+                                </template>
+
+                                <!-- input -->
+                                <input
+                                    x-ref="input"
+                                    x-model="current"
+                                    type="text"
+                                    placeholder="Ej. ejemplo@empresa.com (Enter / coma / espacio)"
+                                    class="flex-1 min-w-[180px] bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500"
+                                    @keydown.enter.prevent="commit()"
+                                    @keydown.space.prevent="commit()"
+                                    @keydown.,.prevent="commit()"
+                                    @keydown.semicolon.prevent="commit()"
+                                    @blur="commit()"
+                                    autocomplete="off"
+                                >
+                                </div>
+                            </div>
+
+                            <p x-show="error" x-text="error" class="text-xs text-red-500 mt-1"></p>
+
+                            @error('emails')   <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                            @error('emails.*') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                            </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Teléfono</label>
@@ -330,4 +356,44 @@
             transition: all 0.2s ease;
         }
     </style>
+
+    @push('scripts')
+    <script>
+    function emailsField() {
+    return {
+        emails: @entangle('emails').defer,
+        current: '',
+        error: '',
+
+        init() {
+        if (!Array.isArray(this.emails)) this.emails = [];
+        this.emails = Array.from(new Set(
+            this.emails.map(e => (e || '').toString().trim().toLowerCase()).filter(Boolean)
+        ));
+        },
+
+        emailRegex(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(v); },
+
+        commit() {
+        let value = (this.current || '').trim().replace(/[;,]$/, '');
+        if (!value) { this.current = ''; this.error=''; return; }
+
+        const parts = value.split(/[\s,;]+/).map(v => v.trim()).filter(Boolean);
+
+        for (const p of parts) {
+            const e = p.toLowerCase();
+            if (!this.emailRegex(e)) { this.error = 'Email no válido: ' + e; continue; }
+            if (!this.emails.includes(e)) this.emails.push(e);
+        }
+
+        this.current = '';
+        if (!this.error) this.error = '';
+        },
+
+        remove(i) { this.emails.splice(i, 1); }
+    }
+    }
+    </script>
+    @endpush
+
 </x-filament-panels::page>
