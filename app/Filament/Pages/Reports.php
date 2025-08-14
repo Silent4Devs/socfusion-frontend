@@ -6,6 +6,7 @@ use Livewire\Attributes\On;
 use Filament\Pages\Page;
 use App\Models\Report;
 use Livewire\WithPagination;
+use App\Models\Client;
 
 class Reports extends Page
 {
@@ -20,7 +21,8 @@ class Reports extends Page
 
     public $iaServer;
     public $query;
-    
+    public $clients = [];
+
     public function updatingQuery()
     {
         $this->resetPage();
@@ -41,6 +43,7 @@ class Reports extends Page
 
     public function mount()
     {
+        $this->clients = Client::orderBy('name')->get();
         $this->iaServer = config('services.ia_server');
         $this->getReportsProperty();
     }
@@ -60,4 +63,7 @@ class Reports extends Page
         return $query->paginate(9)->onEachSide(1);; 
     }
 
+    public function sendEmail(){
+        
+    }
 }
