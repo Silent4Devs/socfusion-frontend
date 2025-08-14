@@ -30,6 +30,8 @@ class Clients extends Page
     public $search = '';
     public $query;
 
+    public array $emails = [];
+
     public function updatedSearch()
     {
         $query = Client::orderBy('name');
@@ -102,6 +104,7 @@ class Clients extends Page
             $this->updateClientsForCurrentPage();
         }
     }
+
     public function previousPage()
     {
         if ($this->currentPage > 1) {
@@ -110,7 +113,6 @@ class Clients extends Page
             $this->updateClientsForCurrentPage();
         }
     }
-
 
     public $clientId = null;
 
@@ -156,7 +158,7 @@ class Clients extends Page
 
         $data = [
             'name' => $this->name,
-            'email' => $this->email,
+            'emails' => $this->emails,
             'phone' => $this->phone,
             'address' => $this->address,
         ];
@@ -167,7 +169,7 @@ class Clients extends Page
 
         $client->update($data);
 
-        $this->reset(['name', 'email', 'phone', 'address', 'logo', 'clientId']);
+        $this->reset(['name', 'emails', 'phone', 'address', 'logo', 'clientId']);
         $this->allClients = Client::orderBy('name')->get();
         $this->dispatch('success-action');
         $this->dispatch('client-edited');
@@ -175,36 +177,48 @@ class Clients extends Page
     }
     
     protected $rules = [
-        'name' => 'required|string|max:255|unique:clients,name',
-        'email' => 'required|email|unique:clients,email',
-        'phone' => 'nullable|string|max:20|regex:/^\d+$/',
-        'address' => 'nullable|string|max:255',
-        'logo' => 'nullable|image|max:2048',
+        'name'        => 'required|string|max:255|unique:clients,name',
+        'emails'      => 'required|array|min:1',
+        'emails.*'    => 'bail|required|email:rfc|max:255|distinct',
+        'phone'       => 'nullable|string|max:20|regex:/^\d+$/',
+        'address'     => 'nullable|string|max:255',
+        'logo'        => 'nullable|image|max:2048',
     ];
+
 
     public function save()
     {
-        $this->validate();
+        
+        $emails = collect($this->emails ?? [])
+            ->map(fn ($e) => strtolower(trim((string) $e)))
+            ->filter()               
+            ->unique()              
+            ->values()              
+            ->all();
+
+        $this->emails = $emails; 
+
+        $this->validate(); 
 
         $logoPath = null;
         if ($this->logo) {
             $logoPath = $this->logo->store('logos', 'public');
         }
 
-        Client::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'phone' => $this->phone,
+        $client = Client::create([
+            'name'    => $this->name,
+            'emails'  => $emails,     
+            'phone'   => $this->phone,
             'address' => $this->address,
-            'logo' => $logoPath,
+            'logo'    => $logoPath,
         ]);
 
-        $this->reset();
+        $this->reset(['name', 'emails', 'phone', 'address', 'logo']);
+
         $this->clients = Client::orderBy('name')->get();
-        $this->total = $this->clients->count();
+        $this->total   = $this->clients->count();
         $this->dispatch('success-action');
         $this->dispatch('client-created');
-        
     }
 
     #[On('delete-client')]
@@ -231,6 +245,6 @@ class Clients extends Page
     public function clearClientFields()
     {
 
-        $this->reset(['name', 'email', 'phone', 'address', 'logo', 'clientId']);
+        $this->reset(['name', 'emails', 'phone', 'address', 'logo', 'clientId']);
     }
 }

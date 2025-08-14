@@ -58,8 +58,12 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $client["name"] }}</div>
-                                            <div class="text-sm text-blue-600 dark:text-blue-300">{{ $client["email" ]}}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                {{ $client['name'] }}
+                                            </div>
+                                            <div class="text-sm text-blue-600 dark:text-blue-300">
+                                                {{ implode(', ', $client['emails'] ?? []) }}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -216,7 +220,7 @@
                                 @click="$refs.input.focus()"
                             >
                                 <div class="flex flex-wrap gap-2">
-                                <!-- chips -->
+                                
                                 <template x-for="(email, idx) in emails" :key="idx">
                                     <span class="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200">
                                     <span x-text="email"></span>
@@ -224,7 +228,7 @@
                                     </span>
                                 </template>
 
-                                <!-- input -->
+                                
                                 <input
                                     x-ref="input"
                                     x-model="current"
@@ -245,7 +249,7 @@
 
                             @error('emails')   <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                             @error('emails.*') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
-                            </div>
+                        </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Teléfono</label>
@@ -361,7 +365,7 @@
     <script>
     function emailsField() {
     return {
-        emails: @entangle('emails').defer,
+        emails: @entangle('emails'),
         current: '',
         error: '',
 

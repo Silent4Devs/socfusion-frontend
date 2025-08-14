@@ -9,13 +9,17 @@ class Client extends Model
 {
     protected $fillable = [
         'name',
-        'email',
+        'emails',
         'phone',
         'address',
         'logo',
     ];
 
     protected $table = 'clients';
+
+    protected $casts = [
+        'emails' => 'array', 
+    ];
 
     public function reports()
     {
