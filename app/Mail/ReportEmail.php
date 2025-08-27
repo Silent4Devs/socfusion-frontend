@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class ReportEmail extends Mailable implements ShouldQueue
@@ -58,7 +59,7 @@ class ReportEmail extends Mailable implements ShouldQueue
     public function attachments(): array
     {
         return [
-            Attachment::fromPath(storage_path('app/'.$this->report['filepath']))
+            Attachment::fromPath(Storage::path($this->report['filepath']))
                 ->as('reporte.pdf')
                 ->withMime('application/pdf'),
         ];
