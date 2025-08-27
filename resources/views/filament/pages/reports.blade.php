@@ -1,8 +1,8 @@
 <x-filament-panels::page>
     <div class="relative w-full max-w-xs mr-auto">
-        <input 
-            type="text" 
-            placeholder="Buscar..." 
+        <input
+            type="text"
+            placeholder="Buscar..."
             class="flex-1 p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 dark:border-gray-600"
             wire:model.live="query"
         />
@@ -11,9 +11,9 @@
         <x-slot name="heading">
             Reportes de Alertas
         </x-slot>
-        
+
         <x-filament::grid default="1" sm="2" md="3" class="gap-4" wire:poll.10s="$refresh">
-            
+
             @foreach($this->reports as $report)
             <x-filament::card>
                 <div class="space-y-4">
@@ -32,15 +32,15 @@
                                 </x-filament::badge>
                             @endif
                     </div>
-                    
+
                     <div class="text-sm text-gray-700 dark:text-gray-300">
                         {{$report['description']}}
                     </div>
-                    
-                                        
+
+
                     <div class="rounded-md overflow-hidden">
                         @if($report['status'] === 'Completed')
-                        <div 
+                        <div
                             x-data="{ loaded: false }"
                             class="relative bg-gray-100 dark:bg-gray-800 rounded shadow flex justify-center items-center"
                         >
@@ -50,7 +50,7 @@
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                 </svg>
                             </div>
-                          
+
                             <img
                                 src="{{ url('/api/reports/' . $report['id'] . '/preview-image') }}"
                                 alt="Preview"
@@ -58,15 +58,15 @@
                                 loading="lazy"
                                 @load="loaded = true"
                                 :class="{ 'opacity-0': !loaded, 'opacity-100': loaded }"
-                               
+
                             />
                         </div>
 
 
                         @elseif($report['status'] === 'Error')
                         <div class="flex flex-col items-center justify-center space-y-4 py-6 animate-fade-in">
-                            
-                        
+
+
                             <div class="text-center space-y-2">
                                 <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                     Error al procesar
@@ -75,8 +75,8 @@
                                     No pudimos generar el reporte. Por favor verifica tu conexión e inténtalo nuevamente.
                                 </p>
                             </div>
-                            
-            
+
+
                         </div>
 
                         <style>
@@ -104,7 +104,7 @@
                                 <div class="absolute inset-0 rounded-full border-4 border-blue-100 dark:border-gray-700"></div>
                                 <div class="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 dark:border-t-cyan-400 animate-spin"></div>
                             </div>
-                            
+
                             <div class="text-center space-y-1">
                                 <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
                                     Procesando tu reporte
@@ -115,15 +115,15 @@
                             </div>
                         </div>
 
-            
+
 
                         @endif
                     </div>
 
-                    @if($report['status'] === 'Completed')  
+                    @if($report['status'] === 'Completed')
                         <div x-data="{ open:false }" class="grid gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl">
 
-                            <a href="{{ route('reports.download', ['id' => $report->id]) }}" 
+                            <a href="{{ route('reports.download', ['id' => $report->id]) }}"
                                 class="future-btn future-btn--primary group">
                                 <span class="future-btn__icon">
                                 <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -171,7 +171,7 @@
                                 x-cloak
                                 x-show="open"
                                 x-transition.opacity
-                                class="fixed inset-0 z-50 flex items-center justify-center"
+                                class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
                                 aria-modal="true" role="dialog">
 
                                 <!-- Fondo -->
@@ -181,7 +181,8 @@
                                 <div
                                 x-transition
                                 class="relative w-full max-w-lg mx-4 rounded-2xl shadow-2xl border
-                                        bg-white dark:bg-gray-800 border-gray-200/70 dark:border-gray-700/60">
+                                        bg-white dark:bg-gray-800 border-gray-200/70 dark:border-gray-700/60
+                                        max-h-[90vh] overflow-y-auto">
 
                                 <!-- Header -->
                                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -199,7 +200,7 @@
 
                                 <!-- Formulario -->
                                 <form
-                                    wire:submit.prevent="sendEmail"
+                                    wire:submit.prevent="sendEmail({{ $report }})"
                                     class="px-6 pt-5 pb-6 space-y-4">
 
                                     <!-- Asunto -->
@@ -210,7 +211,7 @@
                                     <input
                                         type="text"
                                         wire:model.defer="emailSubject"
-                                        placeholder="Escribe el asunto"
+                                        placeholder="Notificación de Actividad Sospechosa || {{$report->title}}"
                                         class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
                                             border-gray-300 dark:border-gray-700
                                             text-gray-900 dark:text-gray-100
@@ -219,6 +220,60 @@
                                     @error('emailSubject')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
+                                    </div>
+
+                                    <!-- Logs -->
+                                    <div class="group">
+                                        <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                            Archivo CSV <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
+                                        </label>
+                                        <div class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 transition-all group-hover:border-blue-400 group-focus-within:border-blue-500">
+
+                                            <!-- Default state -->
+                                            <div x-show="!csvFileName" class="text-center">
+                                                <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                        d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                                    <span class="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">Haz clic para subir</span>
+                                                    <span class="hidden sm:inline"> o arrastra tu archivo CSV</span>
+                                                </p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Solo CSV (Max. 25MB)</p>
+                                            </div>
+
+                                            <!-- Input -->
+                                            <input
+                                                @change="csvFileName = $event.target.files[0]?.name"
+                                                wire:model="csv_file"
+                                                type="file"
+                                                accept=".csv,text/csv"
+                                                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            >
+
+                                            <!-- Show selected file -->
+                                            <div x-show="csvFileName" class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 p-2 rounded-md">
+                                                <span class="text-sm text-gray-700 dark:text-gray-300 truncate" x-text="csvFileName"></span>
+                                                <button
+                                                    type="button"
+                                                    @click="
+                                                        csvFileName = null;
+                                                        $refs.csvInput.value = null;
+                                                        $wire.set('csv_file', null);
+                                                    "
+                                                    class="ml-2 bg-red-500 text-white rounded-full p-1 shadow hover:bg-red-600 transition-colors"
+                                                >
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <!-- Optional: show upload progress if you switch back to live uploads -->
+                                            <div class="mt-2 text-xs text-gray-500" wire:loading wire:target="csv_file">
+                                                Subiendo archivo…
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <!-- Cliente -->
@@ -238,6 +293,297 @@
                                         @endforeach
                                     </select>
                                     @error('selectedClientId')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Descripción -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Descripción
+                                    </label>
+                                    <textarea
+                                        wire:model.defer="description"
+                                        placeholder="Descripción de la actividad sospechosa"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    </textarea>
+                                    @error('description')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Recomendación -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Recomendación
+                                    </label>
+                                    <textarea
+                                        wire:model.defer="recomendations"
+                                        placeholder="Escriba recomendaciones"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    </textarea>
+                                    @error('recomendations')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Hora de detección del log -->
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Foto de la hora de detección del log
+                                    </label>
+
+                                    <div
+                                        x-data="{ preview: null }"
+                                        class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 transition-all group-hover:border-blue-400 group-focus-within:border-blue-500"
+                                    >
+                                        <!-- Default state -->
+                                        <div x-show="!preview" class="text-center">
+                                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                                <span class="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">Haz clic para subir</span>
+                                                <span class="hidden sm:inline"> o arrastra tu imagen</span>
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">PNG, JPG (Max. 5MB)</p>
+                                        </div>
+
+                                        <!-- Input -->
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            wire:model="log_time"
+                                            x-ref="fileInput"
+                                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            @change="
+                                                const file = $event.target.files[0]
+                                                if (file) {
+                                                    const reader = new FileReader()
+                                                    reader.onload = e => preview = e.target.result
+                                                    reader.readAsDataURL(file)
+                                                }
+                                            "
+                                        >
+
+                                        <!-- Show preview -->
+                                        <div x-show="preview" class="relative mt-3">
+                                            <img :src="preview" alt="Preview"
+                                                class="rounded-md w-full h-48 object-cover border border-gray-200 dark:border-gray-600">
+                                            <button
+                                                type="button"
+                                                @click="preview = null; $refs.fileInput.value = null"
+                                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors"
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Información de la herramienta -->
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Capturas de la información proporcionada por la herramienta
+                                    </label>
+
+                                    <div
+                                        x-data="{ previews: [] }"
+                                        class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 transition-all group-hover:border-blue-400 group-focus-within:border-blue-500"
+                                    >
+                                        <!-- Default state -->
+                                        <div x-show="previews.length === 0" class="text-center">
+                                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                                <span class="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">Haz clic para subir</span>
+                                                <span class="hidden sm:inline"> o arrastra tus imágenes</span>
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">PNG, JPG (Max. 5MB)</p>
+                                        </div>
+
+                                        <!-- Input -->
+                                        <input
+                                            type="file"
+                                            multiple
+                                            accept="image/*"
+                                            wire:model="tool_info"
+                                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            @change="
+                                                previews = []
+                                                Array.from($event.target.files).forEach(file => {
+                                                    const reader = new FileReader()
+                                                    reader.onload = e => previews.push(e.target.result)
+                                                    reader.readAsDataURL(file)
+                                                })
+                                            "
+                                        >
+
+                                        <!-- Show selected files -->
+                                        <div x-show="previews.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+                                            <template x-for="(src, index) in previews" :key="index">
+                                                <div class="relative">
+                                                    <img :src="src" alt="Preview"
+                                                        class="rounded-md w-full h-32 object-cover border border-gray-200 dark:border-gray-600">
+                                                    <button
+                                                        type="button"
+                                                        @click="previews.splice(index, 1)"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors"
+                                                    >
+                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ticket de seguimiento -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Ticket de seguimiento
+                                    </label>
+                                    <input
+                                        type="text"
+                                        wire:model.defer="ticket_de_seguimiento"
+                                        placeholder="Formato: XX-S4B-00000000"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    @error('ticket_de_seguimiento')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Ticket en seguimiento -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Ticket en seguimiento
+                                    </label>
+                                    <input
+                                        type="text"
+                                        wire:model.defer="ticket_en_seguimiento"
+                                        placeholder="Formato: XX-S4B-00000000"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    @error('ticket_en_seguimiento')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Acciones tomadas -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Acciones tomadas
+                                    </label>
+                                    <textarea
+                                        wire:model.defer="actions_taken"
+                                        placeholder="Enliste y describa las acciones tomadas en caso de haber hecho algo al respecto"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    </textarea>
+                                    @error('actions_taken')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                    </div>
+
+                                    <!-- Evidencia -->
+                                    <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        Evidencia visual
+                                        <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
+                                    </label>
+
+                                    <div
+                                        x-data="{ previews: [] }"
+                                        class="relative border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 transition-all group-hover:border-blue-400 group-focus-within:border-blue-500"
+                                    >
+                                        <!-- Default state -->
+                                        <div x-show="previews.length === 0" class="text-center">
+                                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                                                <span class="font-medium text-blue-500 hover:text-blue-400 cursor-pointer">Haz clic para subir</span>
+                                                <span class="hidden sm:inline"> o arrastra tus imágenes</span>
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">PNG, JPG (Max. 5MB)</p>
+                                        </div>
+
+                                        <!-- Input -->
+                                        <input
+                                            type="file"
+                                            multiple
+                                            accept="image/*"
+                                            wire:model="evidence"
+                                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                            @change="
+                                                previews = []
+                                                Array.from($event.target.files).forEach(file => {
+                                                    const reader = new FileReader()
+                                                    reader.onload = e => previews.push(e.target.result)
+                                                    reader.readAsDataURL(file)
+                                                })
+                                            "
+                                        >
+
+                                        <!-- Show selected files -->
+                                        <div x-show="previews.length > 0" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+                                            <template x-for="(src, index) in previews" :key="index">
+                                                <div class="relative">
+                                                    <img :src="src" alt="Preview"
+                                                        class="rounded-md w-full h-32 object-cover border border-gray-200 dark:border-gray-600">
+                                                    <button
+                                                        type="button"
+                                                        @click="previews.splice(index, 1)"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600 transition-colors"
+                                                    >
+                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notas adicionales -->
+                                    <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Notas adicionales
+                                    </label>
+                                    <textarea
+                                        wire:model.defer="notes"
+                                        placeholder="Escriba recomendaciones"
+                                        class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
+                                            border-gray-300 dark:border-gray-700
+                                            text-gray-900 dark:text-gray-100
+                                            placeholder-gray-400 dark:placeholder-gray-500
+                                            focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
+                                    </textarea>
+                                    @error('notes')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                     </div>
@@ -269,11 +615,11 @@
 
                     @else
                         <div class="grid gap-3 p-4 dark:bg-gray-900  bg-white rounded-xl shadow-sm dark:shadow-none">
-                        
+
                             <button wire:click="confirmDeletion({{ $report->id }})"
                                     class="future-btn future-btn--danger group">
                                 <span class="future-btn__icon">
-                                
+
                                     <svg class="w-5 h-5 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
@@ -286,7 +632,7 @@
                     @endif
                 </div>
             </x-filament::card>
-            @endforeach 
+            @endforeach
         </x-filament::grid>
             <div class="mt-6 flex justify-center items-center  select-none">
 
@@ -314,7 +660,7 @@
                 @endif
 
                 {{-- Current page --}}
-                <span 
+                <span
                 class="z-10 bg-blue-600 border-blue-600 text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                     {{ $this->reports->currentPage() }}
                 </span>
@@ -460,7 +806,7 @@
                 confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar',
                 background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#ffffff',
-                color: isDarkMode ? '#f3f4f6' : '#111827', 
+                color: isDarkMode ? '#f3f4f6' : '#111827',
                 iconColor: isDarkMode ? '#ef4444' : '#ef4444'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -470,7 +816,7 @@
         });
         window.addEventListener('swal-deleted', () => {
             const isDarkMode = document.documentElement.classList.contains('dark');
-            
+
             Swal.fire({
                 title: '¡Eliminado!',
                 text: 'El reporte fue eliminado',
@@ -479,7 +825,7 @@
                 showConfirmButton: false,
                 background: isDarkMode ? '#1f2937' : '#ffffff',
                 color: isDarkMode ? '#e5e7eb' : '#111827',
-                iconColor: isDarkMode ? '#10b981' : '#059669', 
+                iconColor: isDarkMode ? '#10b981' : '#059669',
                 toast: true,
                 position: 'top-end',
                 showClass: {
