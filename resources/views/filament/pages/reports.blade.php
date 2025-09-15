@@ -205,8 +205,8 @@
 
                                     <!-- Asunto -->
                                     <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Asunto
+                                    <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        Asunto <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
                                     </label>
                                     <input
                                         type="text"
@@ -279,7 +279,7 @@
                                     <!-- Cliente -->
                                     <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Cliente
+                                        Cliente <span style="color:red;">*</span>
                                     </label>
                                     <select
                                         wire:model.defer="selectedClientId"
@@ -300,7 +300,7 @@
                                     <!-- Descripción -->
                                     <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Descripción
+                                        Descripción <span style="color:red;">*</span>
                                     </label>
                                     <textarea
                                         wire:model.defer="description"
@@ -319,7 +319,7 @@
                                     <!-- Recomendación -->
                                     <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Recomendación
+                                        Recomendación <span style="color:red;">*</span>
                                     </label>
                                     <textarea
                                         wire:model.defer="recomendations"
@@ -336,8 +336,8 @@
                                     </div>
 
                                     <!-- Hora de detección del log -->
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Foto de la hora de detección del log
+                                    <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        Foto de la hora de detección del log <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
                                     </label>
 
                                     <div
@@ -392,8 +392,8 @@
                                     </div>
 
                                     <!-- Información de la herramienta -->
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Capturas de la información proporcionada por la herramienta
+                                    <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        Capturas de la información proporcionada por la herramienta <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
                                     </label>
 
                                     <div
@@ -454,7 +454,7 @@
                                     <!-- Ticket de seguimiento -->
                                     <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Ticket de seguimiento
+                                        Ticket de seguimiento <span style="color:red;">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -470,21 +470,21 @@
                                     @enderror
                                     </div>
 
-                                    <!-- Ticket en seguimiento -->
+                                    <!-- Orden de trabajo relacionado -->
                                     <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Ticket en seguimiento
+                                    <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        Orden de trabajo relacionado <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
                                     </label>
                                     <input
                                         type="text"
-                                        wire:model.defer="ticket_en_seguimiento"
+                                        wire:model.defer="orden_de_trabajo"
                                         placeholder="Formato: XX-S4B-00000000"
                                         class="w-full rounded-xl border px-3 py-2 bg-white dark:bg-gray-900
                                             border-gray-300 dark:border-gray-700
                                             text-gray-900 dark:text-gray-100
                                             placeholder-gray-400 dark:placeholder-gray-500
                                             focus:outline-none focus:ring-2 focus:ring-indigo-500/60 focus:border-indigo-500/60">
-                                    @error('ticket_en_seguimiento')
+                                    @error('orden_de_trabajo')
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                     </div>
@@ -492,8 +492,8 @@
                                     <!-- Acciones tomadas -->
                                     <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Acciones tomadas
-                                    </label>
+                                        Acciones tomadas <span style="color:red;">*</span>
+                                    </label> 
                                     <textarea
                                         wire:model.defer="actions_taken"
                                         placeholder="Enliste y describa las acciones tomadas en caso de haber hecho algo al respecto"
@@ -571,8 +571,8 @@
 
                                     <!-- Notas adicionales -->
                                     <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Notas adicionales
+                                    <label class="block text-sm text-gray-500 dark:text-gray-400 mb-1">
+                                        Notas adicionales <small class="ml-1 text-xs text-gray-400 dark:text-gray-500 font-normal">(opcional)</small>
                                     </label>
                                     <textarea
                                         wire:model.defer="notes"

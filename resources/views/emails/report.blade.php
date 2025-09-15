@@ -82,36 +82,38 @@
                 <td>{{$en_es[$alarm['model_classification']]}}</td>
             </tr>
 
-            @foreach ($logrhythmCols as $col)
-                <tr>
-                    @switch($col)
-                        @case('Amount')
-                            <td>Número de eventos:</td>
-                            <td>
-                                {{array_sum($csvData['Amount'])}}
-                            </td>
-                            @break
-                        @case('Log Date')
-                            <td>Fecha:</td>
-                            <td>
-                                @foreach ($csvData[$col] as $data)
-                                    {{$data}}<br>
-                                @endforeach
-                            </td>
-                            @break
-                        @default
-                            @if ($csvData[$col][0]!='' || $csvData[$col][0]!=null)
-                                <td>{{$col}}:</td>
+            @if ($csvData != [])
+                @foreach ($logrhythmCols as $col)
+                    <tr>
+                        @switch($col)
+                            @case('Amount')
+                                <td>Número de eventos:</td>
+                                <td>
+                                    {{array_sum($csvData['Amount'])}}
+                                </td>
+                                @break
+                            @case('Log Date')
+                                <td>Fecha:</td>
                                 <td>
                                     @foreach ($csvData[$col] as $data)
                                         {{$data}}<br>
                                     @endforeach
                                 </td>
-                            @endif
-                    @endswitch
-                </tr>
-            @endforeach
-
+                                @break
+                            @default
+                                @if ($csvData[$col][0]!='' || $csvData[$col][0]!=null)
+                                    <td>{{$col}}:</td>
+                                    <td>
+                                        @foreach ($csvData[$col] as $data)
+                                            {{$data}}<br>
+                                        @endforeach
+                                    </td>
+                                @endif
+                        @endswitch
+                    </tr>
+                @endforeach
+            @endif
+            
             <tr>
                 <td>Descripción:</td>
                 <td>{{$details['description']}}</td>
@@ -127,33 +129,41 @@
         </table>
     @endif
 
-    <p><b>Hora en la que se detecta el log:</b></p>
-    <img src="{{asset('storage/'.$details['log_time'])}}" alt="hora del log">
+    @if ($details['log_time'])
+        <p><b>Hora en la que se detecta el log:</b></p>
+        <img src="{{asset('storage/'.$details['log_time'])}}" alt="hora del log">
+    @endif
 
-    <p><b>Información proporcionada por la herramienta:</b></p>
-    @foreach ($details['tool_info'] as $info)
-        <img src="{{asset('storage/'.$info)}}" alt="información de la herramienta"><br>
-    @endforeach
-
-    <p><b>Análisis de reputación</b></p>
-    <ul id='ips'>
-        <li style="list-style: none"><b>IP:</b></li>
-        @foreach ($ips as $ip => $value)
-            <li>{{$ip}} — {{$value['regional_internet_registry']!=null ? $value['regional_internet_registry'] : 'HOST DESCONOCIDO'}} — {{$value['country']!=null ? $value['country'] : 'PAÍS DESCONOCIDO'}} — {{$value['last_analysis_stats']['malicious']==0 ? 'NO MALICIOSA' : 'MALICIOSA'}}</li>
+    @if ($details['tool_info'])
+        <p><b>Información proporcionada por la herramienta:</b></p>
+        @foreach ($details['tool_info'] as $info)
+            <img src="{{asset('storage/'.$info)}}" alt="información de la herramienta"><br>
         @endforeach
-    </ul>
+    @endif
 
-    <ul>
-        <li style="list-style: none"><b>URL:</b></li>
-        @foreach ($urls as $url => $value)
-            <li>{{$url}} — - — - — {{!array_key_exists('malicious', $value['results']) ? 'NO MALICIOSA' : 'MALICIOSA'}}</li>
-        @endforeach
-    </ul>
+    @if (!empty($ips) || !empty($urls))
+        <p><b>Análisis de reputación</b></p>
+        <ul id='ips'>
+            <li style="list-style: none"><b>IP:</b></li>
+            @foreach ($ips as $ip => $value)
+                <li>{{$ip}} — {{$value['regional_internet_registry']!=null ? $value['regional_internet_registry'] : 'HOST DESCONOCIDO'}} — {{$value['country']!=null ? $value['country'] : 'PAÍS DESCONOCIDO'}} — {{$value['last_analysis_stats']['malicious']==0 ? 'NO MALICIOSA' : 'MALICIOSA'}}</li>
+            @endforeach
+        </ul>
+
+        <ul>
+            <li style="list-style: none"><b>URL:</b></li>
+            @foreach ($urls as $url => $value)
+                <li>{{$url}} — - — - — {{!array_key_exists('malicious', $value['results']) ? 'NO MALICIOSA' : 'MALICIOSA'}}</li>
+            @endforeach
+        </ul>
+    @endif
 
     <p><b>{{$details['actions_taken']}}</b></p>
 
-    <p><b>Buenos días estimado cliente,</b><br>
-    En seguimiento al número de ticket: <b>{{$details['ticket_en_seguimiento']}}</b></p>
+    @if ($details['orden_de_trabajo'])
+        <p><b>Buenos días estimado cliente,</b><br>
+        En seguimiento al número de ticket: <b>{{$details['orden_de_trabajo']}}</b></p>
+    @endif
 
     @if($details['stored_evidence'] != [])
         <p>Se adjunta evidencia del proceso realizado:</p>
@@ -162,7 +172,9 @@
         @endforeach
     @endif
 
-    <p><b>{{$details['notes']}}</b></p>
+    @if ($details['notes'])
+        <p><b>{{$details['notes']}}</b></p>
+    @endif
 
     <p>Quedo atento a sus comentarios,<br>Saludos</p>
 </body>

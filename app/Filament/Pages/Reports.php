@@ -21,8 +21,24 @@ class Reports extends Page
     protected static ?string $title = 'Reportes';
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected ?string $heading = '';
-
     protected static string $view = 'filament.pages.reports';
+
+    protected $rules = [
+        'selectedClientId'      => 'required',
+        'description'           => 'required',
+        'recomendations'        => 'required',
+        'ticket_de_seguimiento' => 'required',
+        'actions_taken'         => 'required',
+        'csv_file'              => 'nullable|file|mimes:csv,txt|max:25600',
+        'evidence.*'            => 'image|max:5120'
+    ];
+    protected $messages = [
+        'selectedClientId.required'         => 'Favor de seleccionar al cliente al que se le mandará el reporte',
+        'description.required'              => 'Favor de describir la incidencia',
+        'recomendations.required'           => 'Favor de sugerir recomendaciones',
+        'ticket_de_seguimiento.required'    => 'Ticket de seguimiento obligatorio',
+        'actions_taken.required'            => 'Favor de escribir las acciones tomadas',
+    ];
 
     public $csv_file;
     public $iaServer;
@@ -36,7 +52,7 @@ class Reports extends Page
     public $tool_info = [];
     public $stored_tool_info = [];
     public $ticket_de_seguimiento;
-    public $ticket_en_seguimiento;
+    public $orden_de_trabajo;
     public $actions_taken;
     public $evidence = [];
     public $stored_evidence = [];
@@ -84,12 +100,7 @@ class Reports extends Page
     }
 
     public function sendEmail($report){
-        $this->validate([
-            'csv_file' => 'nullable|file|mimes:csv,txt|max:25600',
-        ]);
-        $this->validate([
-            'evidence.*' => 'image|max:5120',
-        ]);
+        $this->validate();
 
         $alarm = Http::get($this->iaServer  . "/alarms/{$report['alarm_type']}/{$report['alarm_id']}")->json();
         $this->emailSubject = $this->emailSubject=='' ? "Notificación de Actividad Sospechosa || ".$report['title'] : $this->emailSubject;
@@ -124,7 +135,10 @@ class Reports extends Page
             unlink($fullPath);
         }
 
-        $log_time_path = $this->log_time->store('log-time', 'public');
+        $log_time_path = null;
+        if ($this->log_time) {
+            $log_time_path = $this->log_time->store('log-time', 'public');
+        }
 
         foreach ($this->tool_info as $file) {
             $path = $file->store('evidence', 'public');
@@ -152,7 +166,7 @@ class Reports extends Page
             'log_time' => $log_time_path,
             'tool_info' => $this->stored_tool_info,
             'ticket_de_seguimiento' => $this->ticket_de_seguimiento,
-            'ticket_en_seguimiento' => $this->ticket_en_seguimiento,
+            'orden_de_trabajo' => $this->orden_de_trabajo,
             'actions_taken' => $this->actions_taken,
             'stored_evidence' => $this->stored_evidence,
             'notes' => $this->notes,
