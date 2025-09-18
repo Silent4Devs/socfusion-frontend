@@ -60,6 +60,10 @@ class Tickets extends Page
             $this->priorities    = $distinct['priorities']    ?? [];
             $this->serviceTypes  = $distinct['service_types'] ?? [];
 
+            $this->serviceTypes[] = 'Orden de trabajo';
+            $this->serviceTypes[] = 'Incidencias';
+            $this->serviceTypes[] = 'Actividad sospechosa';
+
             $this->updateTickets();
         } else {
             $this->total = 0;

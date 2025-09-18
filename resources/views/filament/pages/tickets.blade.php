@@ -341,7 +341,7 @@
             
                 <div class="p-6 flex justify-between">
                     <h3 class="text-xl font-light tracking-wide text-gray-800 dark:text-white/90">
-                        <span class="font-medium">Nuevo</span> Reporte 
+                        <span class="font-medium">Nuevo Ticket</span>
                     </h3>
                     <button 
                         @click="showNewModal = false"
@@ -395,9 +395,9 @@
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                <option value="Work Order">Work Order</option>
-                                <option value="Incidencias">Incidencias</option>
-                                <option value="Actividades Sospechosas">Actividades Sospechosas</option>
+                                @foreach ($organizations as $type)
+                                    <option value="{{ $type }}">{{ ucfirst($type) }}</option>
+                                @endforeach
                                 
 
                             </select>
