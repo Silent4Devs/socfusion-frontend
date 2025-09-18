@@ -196,7 +196,7 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Nombre del Cliente</label>
+                        <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Nombre del Cliente<span style="color:red;">*</span></label>
                         <input
                             type="text"
                             wire:model.defer="name"
@@ -211,7 +211,7 @@
                     </div>
 
                         <div x-data="emailsField()" x-init="init()">
-                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Emails</label>
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1">Emails<span style="color:red;">*</span></label>
 
                             <div
                                 class="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/80

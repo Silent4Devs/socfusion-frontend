@@ -17,6 +17,10 @@ class Clients extends Page
 
     protected static string $view = 'filament.pages.clients';
     protected ?string $heading = '';
+    protected $messages = [
+        'name.required'         => 'Nombre del cliente obligatorio',
+        'emails.required'              => 'Registre al menos un correo electrónico',
+    ];
 
     public $clients;
     public $total;
