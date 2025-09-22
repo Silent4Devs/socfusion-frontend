@@ -6,6 +6,11 @@
             window.showToastError(message);
         });
 
+        window.addEventListener('ticket-success', (event) => {
+            const message = event.detail?.[0]?.message || "Se ha guardado exitosamente.";
+            window.showToastSuccess(message);
+        });
+
     </script>
 
     <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false, showNewModal: false, showReassignModal : false}">

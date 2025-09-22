@@ -9,8 +9,6 @@ class Tickets extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-ticket';
     protected static ?string $title = 'Tickets';
-
-
     protected static string $view = 'filament.pages.tickets';
     protected ?string $heading = '';
 
@@ -32,6 +30,8 @@ class Tickets extends Page
     public $assignees, $ownerGroups, $organizations, $priorities, $serviceTypes;
     public $selectedTicket, $error, $loading;
 
+    public $baseUrl;
+
     protected $rules = [
         'description' => 'required|min:10',
         'ticketType' => 'required',
@@ -42,8 +42,9 @@ class Tickets extends Page
 
     public function mount(): void
     {
-        $baseUrl = config('services.ia_server');
-        $response = Http::get($baseUrl . '/tickets/');
+        $this->baseUrl = config('services.ia_server');
+        
+        $response = Http::get($this->baseUrl . '/tickets/');
         $data = $response->json();
 
 
@@ -124,9 +125,24 @@ class Tickets extends Page
 
     public function submitTicket()
     {
-        $this->dispatch('ticket-error', [
+        $data = [
+            'description' => $this->description,
+            'ticketType' => $this->ticketType,
+            'company' => $this->company,
+            'assignedTo' => $this->assignedTo,
+        ];
+
+        $response = Http::post($this->baseUrl . '/tickets/create', $data);
+
+        if ($response->successful()) {
+            $this->dispatch('ticket-success', [
+            'message' => 'El ticket se creó exitosamente.'
+        ]);
+        } else {
+            $this->dispatch('ticket-error', [
             'message' => 'Error al conectarse a Remedy.'
         ]);
+        }
     }
 
     public function goToPage($page)
@@ -140,15 +156,39 @@ class Tickets extends Page
 
     public function reasignarTicket($person)    
     {
-        $this->dispatch('ticket-error', [
+        $data = [
+            'person' => $person,
+        ];
+
+        $response = Http::post($this->baseUrl . '/tickets/reasign', $data);
+
+        if ($response->successful()) {
+            $this->dispatch('ticket-success', [
+            'message' => 'El ticket se reasignó exitosamente.'
+        ]);
+        } else {
+            $this->dispatch('ticket-error', [
             'message' => 'Error al conectarse a Remedy.'
         ]);
+        }
     }
 
     public function changeStatus($status){
-        $this->dispatch('ticket-error', [
+        $data = [
+            'status' => $status,
+        ];
+
+        $response = Http::post($this->baseUrl . '/tickets/status', $data);
+
+        if ($response->successful()) {
+            $this->dispatch('ticket-success', [
+            'message' => 'Se cambió el estatus del ticket exitosamente.'
+        ]);
+        } else {
+            $this->dispatch('ticket-error', [
             'message' => 'Error al conectarse a Remedy.'
         ]);
+        }
     }
 
     public function getTicketDetails($id)
