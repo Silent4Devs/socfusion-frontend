@@ -11,6 +11,10 @@
             window.showToastSuccess(message);
         });
 
+        window.addEventListener('page-reload', event => {
+            window.location.reload();
+        });
+
     </script>
 
     <div class="p-6 min-h-screen transition-colors duration-300" x-data="{ showEditModal : false, showDetailModal: false, showNewModal: false, showReassignModal : false}">
@@ -74,7 +78,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{{ $ticket["assignee"] }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @switch($ticket["status"])
-                                        @case('In Process')
+                                        @case('In Progress')
                                             <span class="px-2 py-1 text-xs text-blue-800  dark:text-blue-200">En proceso</span>
                                             @break
                                         @case('Resolved')
@@ -178,7 +182,7 @@
                                                         
                                                         @foreach($assignees as $assignee)
                                                             <button 
-                                                                wire:click.prevent="reasignarTicket('{{ $assignee }}')"
+                                                                wire:click.prevent="reasignarTicket('{{ $ticket['id'] }}','{{ $assignee }}')"
                                                                 @click="showReassignSelect = false"
                                                                 class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
                                                             >
@@ -212,36 +216,36 @@
                                                     <p class="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400">Estado</p>
                                                     <div class="border-t border-gray-100 dark:border-gray-700"></div>
                                                     <button 
-                                                    wire:click.prevent="changeStatus('Abierto')"
-                                                    @click="showStatusSelect = false"
-                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
-                                                    >
-                                                    <span class="w-2 h-2 mr-2 bg-blue-500 rounded-full flex-shrink-0"></span>
-                                                    <span>Abierto</span>
+                                                        wire:click="changeStatus('{{ $ticket['id'] }}','Pending')"
+                                                        @click="showStatusSelect = false"
+                                                        class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                        >
+                                                        <span class="w-2 h-2 mr-2 bg-yellow-500 rounded-full flex-shrink-0"></span>
+                                                        <span>Pendiente</span>
                                                     </button>
                                                     <button 
-                                                    wire:click.prevent="changeStatus('Abierto')"
-                                                    @click="showStatusSelect = false"
-                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
-                                                    >
-                                                    <span class="w-2 h-2 mr-2 bg-yellow-500 rounded-full flex-shrink-0"></span>
-                                                    <span>En progreso</span>
+                                                        wire:click="changeStatus('{{ $ticket['id'] }}','In Progress')"
+                                                        @click="showStatusSelect = false"
+                                                        class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                        >
+                                                        <span class="w-2 h-2 mr-2 bg-gray-500 rounded-full flex-shrink-0"></span>
+                                                        <span>En proceso</span>
                                                     </button>
                                                     <button 
-                                                    wire:click.prevent="changeStatus('Abierto')"
-                                                    @click="showStatusSelect = false"
-                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
-                                                    >
-                                                    <span class="w-2 h-2 mr-2 bg-green-500 rounded-full flex-shrink-0"></span>
-                                                    <span>Resuelto</span>
+                                                        wire:click="changeStatus('{{ $ticket['id'] }}','Resolved')"
+                                                        @click="showStatusSelect = false"
+                                                        class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                        >
+                                                        <span class="w-2 h-2 mr-2 bg-green-500 rounded-full flex-shrink-0"></span>
+                                                        <span>Resuelto</span>
                                                     </button>
                                                     <button 
-                                                    wire:click.prevent="changeStatus('Abierto')"
-                                                    @click="showStatusSelect = false"
-                                                    class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
-                                                    >
-                                                    <span class="w-2 h-2 mr-2 bg-gray-500 rounded-full flex-shrink-0"></span>
-                                                    <span>Cerrado</span>
+                                                        wire:click="changeStatus('{{ $ticket['id'] }}','Closed')"
+                                                        @click="showStatusSelect = false"
+                                                        class="w-full text-left px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center"
+                                                        >
+                                                        <span class="w-2 h-2 mr-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                                        <span>Cerrado</span>
                                                     </button>
                                                 </div>
                                                 </div>

@@ -42,7 +42,8 @@ class Tickets extends Page
 
     public function mount(): void
     {
-        $this->baseUrl = config('services.ia_server');
+        #$this->baseUrl = config('services.ia_server');
+        $this->baseUrl = "http://127.0.0.1:8000";
         
         $response = Http::get($this->baseUrl . '/tickets/');
         $data = $response->json();
@@ -154,10 +155,11 @@ class Tickets extends Page
         $this->updateTickets();
     }
 
-    public function reasignarTicket($person)    
+    public function reasignarTicket($id, $person)    
     {
         $data = [
-            'person' => $person,
+            'id' => $id,
+            'value' => $person,
         ];
 
         $response = Http::post($this->baseUrl . '/tickets/reasign', $data);
@@ -165,17 +167,19 @@ class Tickets extends Page
         if ($response->successful()) {
             $this->dispatch('ticket-success', [
             'message' => 'El ticket se reasignó exitosamente.'
-        ]);
+            ]);
+            $this->dispatch('page-reload');
         } else {
             $this->dispatch('ticket-error', [
-            'message' => 'Error al conectarse a Remedy.'
-        ]);
+            'message' => 'Error al reasignar ticket.'
+            ]);
         }
     }
 
-    public function changeStatus($status){
+    public function changeStatus($id, $status){
         $data = [
-            'status' => $status,
+            'id' => $id,
+            'value' => $status,
         ];
 
         $response = Http::post($this->baseUrl . '/tickets/status', $data);
@@ -183,11 +187,12 @@ class Tickets extends Page
         if ($response->successful()) {
             $this->dispatch('ticket-success', [
             'message' => 'Se cambió el estatus del ticket exitosamente.'
-        ]);
+            ]);
+            $this->dispatch('page-reload');
         } else {
             $this->dispatch('ticket-error', [
-            'message' => 'Error al conectarse a Remedy.'
-        ]);
+            'message' => 'Error al actualizar estatus.'
+            ]);
         }
     }
 
